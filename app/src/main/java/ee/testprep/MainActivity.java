@@ -1,12 +1,15 @@
 package ee.testprep;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -17,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.aspose.cells.Cell;
 import com.aspose.cells.FileFormatType;
@@ -39,6 +43,8 @@ import ee.testprep.fragment.SettingsFragment;
 import ee.testprep.fragment.StatsFragment;
 
 public class MainActivity extends AppCompatActivity {
+
+    private String className = getClass().getSimpleName();
 
     private Workbook workbook;
     private DataBaseHelper dbHelper;
@@ -74,6 +80,9 @@ public class MainActivity extends AppCompatActivity {
     // flag to load home fragment when user presses back key
     private boolean loadHomeOnBackPress = true;
     private Handler mHandler;
+
+    //permissions
+    private static final int PERMISSION_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,6 +124,13 @@ public class MainActivity extends AppCompatActivity {
             navItemIndex = 0;
             CURRENT_TAG = TAG_HOME;
             loadHomeFragment();
+        }
+
+        //set permissions if not already set TODO
+        if(!checkPermission()) {
+            requestPermission();
+        } else {
+            L.v(className, "Permissions already granted");
         }
 
         //if there is no database already created, create one from .xlsx
@@ -511,4 +527,41 @@ public class MainActivity extends AppCompatActivity {
         mThread.start();
 
     }
+
+    private boolean checkPermission() {
+        int result = ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE);
+        if (result == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void requestPermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            Toast.makeText(this, "Storage permissions are required to store database." +
+                    "Please allow this permission in App Settings.", Toast.LENGTH_LONG).show();
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
+                    PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    //TODO
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    L.e(className, "Permission Granted!");
+                } else {
+                    L.e(className, "Permission Denied!");
+                }
+                break;
+        }
+    }
+
+
 }
