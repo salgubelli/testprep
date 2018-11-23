@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/darker_gray"
+    android:paddingTop="@dimen/activity_horizontal_margin"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:textSize="24sp"
+        android:gravity="center"
+        android:text="Filter by"/>
+
+    <Button
+        android:id="@+id/bt_learn_year"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:layout_marginStart="16sp"
+        android:layout_marginEnd="16sp"
+        android:text="Year"/>
+
+    <Button
+        android:id="@+id/bt_learn_subject"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:layout_marginStart="16sp"
+        android:layout_marginEnd="16sp"
+        android:text="Subject"/>
+
+    <Button
+        android:id="@+id/bt_learn_exam"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:layout_marginStart="16sp"
+        android:layout_marginEnd="16sp"
+        android:text="Exam" />
+
+    <Button
+        android:id="@+id/bt_learn_userstatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:layout_marginStart="16sp"
+        android:layout_marginEnd="16sp"
+        android:text="User Status" />
+
+</LinearLayout>

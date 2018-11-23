@@ -6,8 +6,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
+import android.util.Log;
 
-public class DataBaseHelper extends SQLiteOpenHelper {
+import com.aspose.cells.Row;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+public class DataBaseHelper extends SQLiteOpenHelper implements Serializable{
 
     private static final String className = DataBaseHelper.class.getName();
     private static final int DATABASE_VERSION = 1;
@@ -97,6 +104,43 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         // insert row
         return db.insert(TABLE_QBANK, null, values);
+    }
+
+    /*
+    Query database by year
+     */
+    public List<DBRow> queryByYear(String filter) {
+        List<DBRow> questions = new ArrayList<>();
+        String selectQuery = "SELECT * FROM " + TABLE_QBANK + " WHERE " + filter;
+
+        L.d(className, "query by " + filter);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c != null && c.moveToFirst()) {
+            do {
+                DBRow row = new DBRow();
+                row.exam = c.getString(c.getColumnIndex(DBRow.KEY_EXAM));
+                row.year = c.getString(c.getColumnIndex(DBRow.KEY_YEAR));
+                //row.qNo = c.getInt(c.getColumnIndex(DBRow.KEY_QNO));
+                row.question = c.getString(c.getColumnIndex(DBRow.KEY_QUESTION));
+                row.optionA = c.getString(c.getColumnIndex(DBRow.KEY_OPTA));
+                row.optionB = c.getString(c.getColumnIndex(DBRow.KEY_OPTB));
+                row.optionC = c.getString(c.getColumnIndex(DBRow.KEY_OPTC));
+                row.optionD = c.getString(c.getColumnIndex(DBRow.KEY_OPTD));
+                row.answer = c.getString(c.getColumnIndex(DBRow.KEY_ANSWER));
+                row.ipc = c.getString(c.getColumnIndex(DBRow.KEY_IPC));
+                row.subject = c.getString(c.getColumnIndex(DBRow.KEY_SUBJECT));
+
+                // adding to todo list
+                questions.add(row);
+                L.d(className, row.toString());
+            } while (c.moveToNext());
+        }
+
+        return questions;
     }
 
 /*    public DBUSer checkQuizLevelExists(String quizlevel) {

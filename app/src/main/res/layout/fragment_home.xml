@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:paddingTop="@dimen/activity_horizontal_margin"
+              android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_home_wish"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="42sp"
+        android:paddingBottom="10sp"
+        android:text="Good Morning!"
+        android:textSize="24sp"
+        android:gravity="center" />
+
+    <View style="@style/Divider"/>
+
+    <TextView
+        android:id="@+id/tv_home_quote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16sp"
+        android:layout_marginStart="10sp"
+        android:layout_marginEnd="10sp"
+        android:maxLines="6"
+        android:textAlignment="center"
+        android:text="sample quote here"
+        android:textSize="18sp"/>
+
+    <TextView
+        android:id="@+id/tv_home_author"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="- Author Unknown"
+        android:gravity="right"/>
+
+</LinearLayout>
