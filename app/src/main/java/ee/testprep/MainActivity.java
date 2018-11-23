@@ -22,33 +22,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.aspose.cells.Cell;
-import com.aspose.cells.FileFormatType;
-import com.aspose.cells.LoadOptions;
-import com.aspose.cells.Row;
-import com.aspose.cells.Workbook;
-import com.aspose.cells.Worksheet;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Iterator;
-
-import ee.testprep.fragment.HomeFragment;
-import ee.testprep.fragment.LearnFragment;
-import ee.testprep.fragment.ModelTestFragment;
-import ee.testprep.fragment.QuizFragment;
-import ee.testprep.fragment.SettingsFragment;
-import ee.testprep.fragment.StatsFragment;
+import ee.testprep.fragment.*;
 
 public class MainActivity extends AppCompatActivity {
 
     private String className = getClass().getSimpleName();
 
-    private Workbook workbook;
     private DataBaseHelper dbHelper;
-
     private NavigationView navigationView;
     private DrawerLayout drawer;
     private View navHeader;
@@ -126,7 +106,8 @@ public class MainActivity extends AppCompatActivity {
             loadHomeFragment();
         }
 
-        //set permissions if not already set TODO
+        //set permissions if not already set
+        //TODO check multiple permissions and less than 23 API
         if(!checkPermission()) {
             requestPermission();
         } else {
@@ -134,8 +115,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //if there is no database already created, create one from .xlsx
-        dbHelper = new DataBaseHelper(this);//TODO
-        convertXLStoSQL();
+        dbHelper = new DataBaseHelper(this);
     }
 
     private void setUpNavigationView() {
@@ -431,101 +411,6 @@ public class MainActivity extends AppCompatActivity {
         //dbHelper.queryByYear("year=2015");
         //dbHelper.queryByYear("subject=\"ECON\"");
         dbHelper.queryByYear("subject=\"POLI\"");
-    }
-
-    private void convertXLStoSQL() {
-
-        Thread mThread = new Thread() {
-
-            @Override
-            public void run() {
-                //File file = new File(getExternalFilesDir(null), "dummy.xlsx");
-                File file = new File("/sdcard/dummy.xlsx");
-
-                FileInputStream fstream;
-                LoadOptions loadOptions = new LoadOptions(FileFormatType.XLSX);
-                //loadOptions.setPassword("penke999");
-                FileInputStream myInput = null;
-                try {
-                    fstream = new FileInputStream(file);
-                    workbook = new Workbook(fstream, loadOptions);
-
-                } catch (FileNotFoundException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-
-                if (workbook != null) {
-                    Worksheet worksheet = workbook.getWorksheets().get(0);
-
-                    Iterator<Row> rowIterator = worksheet.getCells().getRows().iterator();
-                    rowIterator.hasNext();//skip header TODO
-
-                    L.d(getLocalClassName(), "rows: " + worksheet.getCells().getRows().getCount());
-
-                    while (rowIterator.hasNext()) {
-                        int colIndex = 0;
-                        Row row = rowIterator.next();
-                        Iterator<Cell> cellIterator = row.iterator();
-                        DBRow dbRow = new DBRow();
-
-                        while (cellIterator.hasNext()) {
-                            Cell cell = cellIterator.next();
-                            switch (colIndex) {
-                                case 0:
-                                    dbRow.exam = cell.getDisplayStringValue();
-                                    break;
-                                case 1:
-                                    dbRow.year = cell.getDisplayStringValue();
-                                    break;
-                                /*case 2:
-                                    dbRow.qNo = cell.getIntValue()+1;
-                                    L.d(getLocalClassName(), dbRow.qNo+"");
-                                    break;*/
-                                case 3:
-                                    dbRow.question = cell.getDisplayStringValue();
-                                    break;
-                                case 4:
-                                    dbRow.optionA = cell.getDisplayStringValue();
-                                    break;
-                                case 5:
-                                    dbRow.optionB = cell.getDisplayStringValue();
-                                    break;
-                                case 6:
-                                    dbRow.optionC = cell.getDisplayStringValue();
-                                    break;
-                                case 7:
-                                    dbRow.optionD = cell.getDisplayStringValue();
-                                    break;
-                                case 8:
-                                    dbRow.answer = cell.getDisplayStringValue();
-                                    break;
-                                case 9:
-                                    dbRow.ipc = cell.getDisplayStringValue();
-                                    break;
-                                case 10:
-                                    dbRow.subject = cell.getDisplayStringValue();
-                                    break;
-                                default:
-                                    break;
-                            }
-
-                            colIndex++;
-                        }
-
-                        dbHelper.insertRow(dbRow);
-                    }
-                }
-            }
-        };
-        mThread.start();
-
     }
 
     private boolean checkPermission() {

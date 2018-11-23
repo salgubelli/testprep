@@ -8,13 +8,23 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import com.aspose.cells.Cell;
+import com.aspose.cells.FileFormatType;
+import com.aspose.cells.LoadOptions;
 import com.aspose.cells.Row;
+import com.aspose.cells.Workbook;
+import com.aspose.cells.Worksheet;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-public class DataBaseHelper extends SQLiteOpenHelper implements Serializable{
+public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
 
     private static final String className = DataBaseHelper.class.getName();
     private static final int DATABASE_VERSION = 1;
@@ -23,6 +33,8 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable{
     // Table Names
     private static final String TABLE_USERDATA = "userData";
     private static final String TABLE_QBANK = "qBank";
+
+    private Workbook workbook;
 
     public static final String CREATE_TABLE_MAIN = "CREATE TABLE "
             + TABLE_QBANK + "(" +
@@ -49,6 +61,7 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable{
     public void onCreate(SQLiteDatabase db) {
         if(!isTableExists(db, TABLE_QBANK)) {
             db.execSQL(CREATE_TABLE_MAIN);
+            convertXLStoSQL();
         }
     }
 
@@ -60,18 +73,7 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable{
         onCreate(db);
     }
 
-    private boolean isTableExists(SQLiteDatabase db, String tableName) {
-
-/*        if(openDb) {
-            if(db == null || !db.isOpen()) {
-                db = getReadableDatabase();
-            }
-
-            if(!db.isReadOnly()) {
-                db.close();
-                db = getReadableDatabase();
-            }
-        }*/
+    public boolean isTableExists(SQLiteDatabase db, String tableName) {
 
         Cursor cursor = db.rawQuery(
                 "select DISTINCT tbl_name from sqlite_master where tbl_name = '"+tableName+"'",
@@ -84,6 +86,101 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable{
             cursor.close();
         }
         return false;
+    }
+
+    public void convertXLStoSQL() {
+
+        Thread mThread = new Thread() {
+
+            @Override
+            public void run() {
+                //File file = new File(getExternalFilesDir(null), "dummy.xlsx");
+                File file = new File("/sdcard/dummy.xlsx");
+
+                FileInputStream fstream;
+                LoadOptions loadOptions = new LoadOptions(FileFormatType.XLSX);
+                //loadOptions.setPassword("penke999");
+                FileInputStream myInput = null;
+                try {
+                    fstream = new FileInputStream(file);
+                    workbook = new Workbook(fstream, loadOptions);
+
+                } catch (FileNotFoundException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
+                if (workbook != null) {
+                    Worksheet worksheet = workbook.getWorksheets().get(0);
+
+                    Iterator<Row> rowIterator = worksheet.getCells().getRows().iterator();
+                    rowIterator.hasNext();//skip header TODO
+
+                    L.d(className, "rows: " + worksheet.getCells().getRows().getCount());
+
+                    while (rowIterator.hasNext()) {
+                        int colIndex = 0;
+                        Row row = rowIterator.next();
+                        Iterator<Cell> cellIterator = row.iterator();
+                        DBRow dbRow = new DBRow();
+
+                        while (cellIterator.hasNext()) {
+                            Cell cell = cellIterator.next();
+                            switch (colIndex) {
+                                case 0:
+                                    dbRow.exam = cell.getDisplayStringValue();
+                                    break;
+                                case 1:
+                                    dbRow.year = cell.getDisplayStringValue();
+                                    break;
+                                /*case 2:
+                                    dbRow.qNo = cell.getIntValue()+1;
+                                    L.d(getLocalClassName(), dbRow.qNo+"");
+                                    break;*/
+                                case 3:
+                                    dbRow.question = cell.getDisplayStringValue();
+                                    break;
+                                case 4:
+                                    dbRow.optionA = cell.getDisplayStringValue();
+                                    break;
+                                case 5:
+                                    dbRow.optionB = cell.getDisplayStringValue();
+                                    break;
+                                case 6:
+                                    dbRow.optionC = cell.getDisplayStringValue();
+                                    break;
+                                case 7:
+                                    dbRow.optionD = cell.getDisplayStringValue();
+                                    break;
+                                case 8:
+                                    dbRow.answer = cell.getDisplayStringValue();
+                                    break;
+                                case 9:
+                                    dbRow.ipc = cell.getDisplayStringValue();
+                                    break;
+                                case 10:
+                                    dbRow.subject = cell.getDisplayStringValue();
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                            colIndex++;
+                        }
+
+                        insertRow(dbRow);
+                    }
+                }
+            }
+        };
+        mThread.start();
+
     }
 
     public long insertRow(DBRow row) {
@@ -226,6 +323,5 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable{
         if (db != null && db.isOpen())
             db.close();
     }
-
 
 }
