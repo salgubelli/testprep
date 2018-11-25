@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -59,7 +60,7 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        if(!isTableExists(db, TABLE_QBANK)) {
+        if (!isTableExists(db, TABLE_QBANK)) {
             db.execSQL(CREATE_TABLE_MAIN);
             convertXLStoSQL();
         }
@@ -76,10 +77,10 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
     public boolean isTableExists(SQLiteDatabase db, String tableName) {
 
         Cursor cursor = db.rawQuery(
-                "select DISTINCT tbl_name from sqlite_master where tbl_name = '"+tableName+"'",
+                "select DISTINCT tbl_name from sqlite_master where tbl_name = '" + tableName + "'",
                 null);
-        if(cursor!=null) {
-            if(cursor.getCount()>0) {
+        if (cursor != null) {
+            if (cursor.getCount() > 0) {
                 cursor.close();
                 return true;
             }
@@ -203,14 +204,149 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
         return db.insert(TABLE_QBANK, null, values);
     }
 
-    /*
-    Query database by year
-     */
-    public List<DBRow> queryByYear(String filter) {
-        List<DBRow> questions = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + TABLE_QBANK + " WHERE " + filter;
+    public ArrayList<String> queryYear() {
+        ArrayList<String> yearList = new ArrayList<>();
+        String query = "SELECT DISTINCT year FROM " + TABLE_QBANK;
 
-        L.d(className, "query by " + filter);
+        L.v(className, "Query Years");
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(query, null);
+
+        if (c != null && c.moveToFirst()) {
+            do {
+                String year = c.getString(c.getColumnIndex(DBRow.KEY_YEAR));
+
+                if (year != null && !year.equals("")) {
+                    yearList.add(year);
+                    L.v(className, "penke " + year);
+                }
+            } while (c.moveToNext());
+        }
+
+        return new ArrayList<>(yearList);
+    }
+
+    public ArrayList<String> querySubject() {
+        ArrayList<String> subList = new ArrayList<>();
+        String query = "SELECT DISTINCT subject FROM " + TABLE_QBANK;
+
+        L.v(className, "Query Subjects");
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(query, null);
+
+        if (c != null && c.moveToFirst()) {
+            do {
+                String sub = c.getString(c.getColumnIndex(DBRow.KEY_SUBJECT));
+
+                if (sub != null && !sub.equals("")) {
+                    subList.add(sub);
+                    L.v(className, "penke " + sub);
+                }
+            } while (c.moveToNext());
+        }
+
+        return new ArrayList<>(subList);
+    }
+
+    public ArrayList<String> queryExam() {
+        ArrayList<String> examList = new ArrayList<>();
+        String query = "SELECT DISTINCT examName FROM " + TABLE_QBANK;
+
+        L.v(className, "Query Exam Names");
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(query, null);
+
+        if (c != null && c.moveToFirst()) {
+            do {
+                String exam = c.getString(c.getColumnIndex(DBRow.KEY_EXAM));
+
+                if (exam != null && !exam.equals("")) {
+                    examList.add(exam);
+                    L.v(className, "penke " + exam);
+                }
+            } while (c.moveToNext());
+        }
+
+        return new ArrayList<>(examList);
+    }
+
+    public List<DBRow> queryYearExt(String year) {
+        List<DBRow> questions = new ArrayList<>();
+        String selectQuery = "SELECT * FROM " + TABLE_QBANK + " WHERE " + year;
+
+        L.d(className, "Query by " + year);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c != null && c.moveToFirst()) {
+            do {
+                DBRow row = new DBRow();
+                row.exam = c.getString(c.getColumnIndex(DBRow.KEY_EXAM));
+                row.year = c.getString(c.getColumnIndex(DBRow.KEY_YEAR));
+                //row.qNo = c.getInt(c.getColumnIndex(DBRow.KEY_QNO));
+                row.question = c.getString(c.getColumnIndex(DBRow.KEY_QUESTION));
+                row.optionA = c.getString(c.getColumnIndex(DBRow.KEY_OPTA));
+                row.optionB = c.getString(c.getColumnIndex(DBRow.KEY_OPTB));
+                row.optionC = c.getString(c.getColumnIndex(DBRow.KEY_OPTC));
+                row.optionD = c.getString(c.getColumnIndex(DBRow.KEY_OPTD));
+                row.answer = c.getString(c.getColumnIndex(DBRow.KEY_ANSWER));
+                row.ipc = c.getString(c.getColumnIndex(DBRow.KEY_IPC));
+                row.subject = c.getString(c.getColumnIndex(DBRow.KEY_SUBJECT));
+
+                // adding to todo list
+                questions.add(row);
+                L.d(className, row.toString());
+            } while (c.moveToNext());
+        }
+
+        return questions;
+    }
+
+    public List<DBRow> querySubjectExt(String subject) {
+        List<DBRow> questions = new ArrayList<>();
+        String selectQuery = "SELECT * FROM " + TABLE_QBANK + " WHERE " + subject;
+
+        L.d(className, "Query by " + subject);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c != null && c.moveToFirst()) {
+            do {
+                DBRow row = new DBRow();
+                row.exam = c.getString(c.getColumnIndex(DBRow.KEY_EXAM));
+                row.year = c.getString(c.getColumnIndex(DBRow.KEY_YEAR));
+                //row.qNo = c.getInt(c.getColumnIndex(DBRow.KEY_QNO));
+                row.question = c.getString(c.getColumnIndex(DBRow.KEY_QUESTION));
+                row.optionA = c.getString(c.getColumnIndex(DBRow.KEY_OPTA));
+                row.optionB = c.getString(c.getColumnIndex(DBRow.KEY_OPTB));
+                row.optionC = c.getString(c.getColumnIndex(DBRow.KEY_OPTC));
+                row.optionD = c.getString(c.getColumnIndex(DBRow.KEY_OPTD));
+                row.answer = c.getString(c.getColumnIndex(DBRow.KEY_ANSWER));
+                row.ipc = c.getString(c.getColumnIndex(DBRow.KEY_IPC));
+                row.subject = c.getString(c.getColumnIndex(DBRow.KEY_SUBJECT));
+
+                // adding to todo list
+                questions.add(row);
+                L.d(className, row.toString());
+            } while (c.moveToNext());
+        }
+
+        return questions;
+    }
+
+
+    public List<DBRow> queryExamExt(String exam) {
+        List<DBRow> questions = new ArrayList<>();
+        String selectQuery = "SELECT * FROM " + TABLE_QBANK + " WHERE " + exam;
+
+        L.d(className, "Query by " + exam);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -291,7 +427,9 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
         return todos;
     }
 
-    *//**
+    */
+
+    /**
      * getting todo count
      *//*
     public int getToDoCount() {
@@ -317,7 +455,6 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
         return db.update(TABLE_USERDATA, values, KEY_QUIZLEVEL + " = ?",
                 new String[]{String.valueOf(todo.getQuizlevelname())});
     }*/
-
     public void closeDB() {
         SQLiteDatabase db = this.getReadableDatabase();
         if (db != null && db.isOpen())

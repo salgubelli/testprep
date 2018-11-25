@@ -1,19 +1,28 @@
 package ee.testprep.fragment;
 
+import android.annotation.SuppressLint;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
 import java.io.Serializable;
+import java.time.YearMonth;
+import java.util.ArrayList;
 
 import ee.testprep.DataBaseHelper;
 import ee.testprep.L;
+import ee.testprep.MainActivity;
 import ee.testprep.R;
+import ee.testprep.fragment.learn.ExamFragment;
+import ee.testprep.fragment.learn.SubjectFragment;
+import ee.testprep.fragment.learn.UserStatusFragment;
+import ee.testprep.fragment.learn.YearFragment;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,6 +37,16 @@ public class LearnFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private DataBaseHelper dbHelper;
     private static String className = LearnFragment.class.getSimpleName();
+
+    public static String TAG_YEAR = "year";
+    public static String TAG_SUBJECT = "subject";
+    public static String TAG_EXAM = "exam";
+    public static String CURRENT_TAG = TAG_YEAR;
+
+    private YearFragment yearFragment;
+    private SubjectFragment subjectFragment;
+    private ExamFragment examFragment;
+    private UserStatusFragment userStatusFragment;
 
     public LearnFragment() {
     }
@@ -66,8 +85,28 @@ public class LearnFragment extends Fragment {
         btnYear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(dbHelper != null)
-                    dbHelper.queryByYear("year=2015");
+                if(dbHelper != null) {
+                    ArrayList<String> years = dbHelper.queryYear();
+                    yearFragment = YearFragment.newInstance("", years);
+
+                    Runnable mPendingRunnable = new Runnable() {
+                        @SuppressLint("ResourceType")
+                        @Override
+                        public void run() {
+                            // update the main content by replacing fragments
+                            Fragment fragment = yearFragment;
+                            FragmentTransaction fragmentTransaction =
+                                    getFragmentManager().beginTransaction();
+                            fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
+                                    android.R.animator.fade_out);
+                            fragmentTransaction.replace(R.id.frame, fragment, TAG_YEAR);
+                            fragmentTransaction.commitAllowingStateLoss();
+                        }
+                    };
+
+                    // If mPendingRunnable is not null, then add to the message queue
+                    MainActivity.mUIHandler.post(mPendingRunnable);
+                }
                 else
                     L.e(className, "DataBaseHelper returned null");
             }
@@ -77,8 +116,27 @@ public class LearnFragment extends Fragment {
         btnSubject.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(dbHelper != null)
-                    dbHelper.queryByYear("subject=\"POLI\"");
+                if(dbHelper != null) {
+                    ArrayList<String> subjects = dbHelper.querySubject();
+                    subjectFragment = SubjectFragment.newInstance("", subjects);
+
+                    Runnable mPendingRunnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            // update the main content by replacing fragments
+                            Fragment fragment = subjectFragment;
+                            FragmentTransaction fragmentTransaction =
+                                    getFragmentManager().beginTransaction();
+                            fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
+                                    android.R.animator.fade_out);
+                            fragmentTransaction.replace(R.id.frame, fragment, TAG_SUBJECT);
+                            fragmentTransaction.commitAllowingStateLoss();
+                        }
+                    };
+
+                    // If mPendingRunnable is not null, then add to the message queue
+                    MainActivity.mUIHandler.post(mPendingRunnable);
+                }
                 else
                     L.e(className, "DataBaseHelper returned null");
             }
@@ -88,8 +146,27 @@ public class LearnFragment extends Fragment {
         btnExam.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(dbHelper != null)
-                    dbHelper.queryByYear("examName=\"CSP\"");
+                if(dbHelper != null) {
+                    ArrayList<String> exams = dbHelper.queryExam();
+                    examFragment = ExamFragment.newInstance("", exams);
+
+                    Runnable mPendingRunnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            // update the main content by replacing fragments
+                            Fragment fragment = examFragment;
+                            FragmentTransaction fragmentTransaction =
+                                    getFragmentManager().beginTransaction();
+                            fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
+                                    android.R.animator.fade_out);
+                            fragmentTransaction.replace(R.id.frame, fragment, TAG_EXAM);
+                            fragmentTransaction.commitAllowingStateLoss();
+                        }
+                    };
+
+                    // If mPendingRunnable is not null, then add to the message queue
+                    MainActivity.mUIHandler.post(mPendingRunnable);
+                }
                 else
                     L.e(className, "DataBaseHelper returned null");
             }

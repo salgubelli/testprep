@@ -1,5 +1,8 @@
 package ee.testprep;
 
+import android.annotation.SuppressLint;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -8,7 +11,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -59,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
     // flag to load home fragment when user presses back key
     private boolean loadHomeOnBackPress = true;
-    private Handler mHandler;
+    public static Handler mUIHandler;
 
     //permissions
     private static final int PERMISSION_REQUEST_CODE = 1;
@@ -71,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mHandler = new Handler();
+        mUIHandler = new Handler();
 
         drawer = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
@@ -256,6 +258,10 @@ public class MainActivity extends AppCompatActivity {
             fab.hide();
     }
 
+    public Handler getUIHandler() {
+        return mUIHandler;
+    }
+
 
     private Fragment getHomeFragment() {
         switch (navItemIndex) {
@@ -316,9 +322,9 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 // update the main content by replacing fragments
                 Fragment fragment = getHomeFragment();
-                android.support.v4.app.FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.setCustomAnimations(android.R.anim.fade_in,
-                        android.R.anim.fade_out);
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
+                        android.R.animator.fade_out);
                 fragmentTransaction.replace(R.id.frame, fragment, CURRENT_TAG);
                 fragmentTransaction.commitAllowingStateLoss();
             }
@@ -326,7 +332,7 @@ public class MainActivity extends AppCompatActivity {
 
         // If mPendingRunnable is not null, then add to the message queue
         if (mPendingRunnable != null) {
-            mHandler.post(mPendingRunnable);
+            mUIHandler.post(mPendingRunnable);
         }
 
         // show or hide the fab button
@@ -405,12 +411,6 @@ public class MainActivity extends AppCompatActivity {
         }*/
 
         return super.onOptionsItemSelected(item);
-    }
-
-    public void queryClick(View view) {
-        //dbHelper.queryByYear("year=2015");
-        //dbHelper.queryByYear("subject=\"ECON\"");
-        dbHelper.queryByYear("subject=\"POLI\"");
     }
 
     private boolean checkPermission() {
