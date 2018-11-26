@@ -99,7 +99,7 @@ public class LearnFragment extends Fragment {
                                     getFragmentManager().beginTransaction();
                             fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
                                     android.R.animator.fade_out);
-                            fragmentTransaction.replace(R.id.frame, fragment, TAG_YEAR);
+                            fragmentTransaction.replace(R.id.frame, fragment, TAG_YEAR).addToBackStack("learn");
                             fragmentTransaction.commitAllowingStateLoss();
                         }
                     };
@@ -129,7 +129,7 @@ public class LearnFragment extends Fragment {
                                     getFragmentManager().beginTransaction();
                             fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
                                     android.R.animator.fade_out);
-                            fragmentTransaction.replace(R.id.frame, fragment, TAG_SUBJECT);
+                            fragmentTransaction.replace(R.id.frame, fragment, TAG_SUBJECT).addToBackStack("learn");;
                             fragmentTransaction.commitAllowingStateLoss();
                         }
                     };
@@ -159,7 +159,7 @@ public class LearnFragment extends Fragment {
                                     getFragmentManager().beginTransaction();
                             fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
                                     android.R.animator.fade_out);
-                            fragmentTransaction.replace(R.id.frame, fragment, TAG_EXAM);
+                            fragmentTransaction.replace(R.id.frame, fragment, TAG_EXAM).addToBackStack("learn");;
                             fragmentTransaction.commitAllowingStateLoss();
                         }
                     };
