@@ -1,6 +1,8 @@
 package ee.testprep;
 
-public class DBRow {
+import java.io.Serializable;
+
+public class DBRow implements Serializable {
     //Column names
     public static final String KEY_EXAM = "examName";
     public static final String KEY_YEAR = "year";

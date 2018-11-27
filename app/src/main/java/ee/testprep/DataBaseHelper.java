@@ -376,6 +376,47 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
         return questions;
     }
 
+    public List<DBRow> queryQuestionsQuiz() {
+
+        //setPreferences TODO
+        //get number of questions - 10, 20, 30 - 10; TODO
+        int numQ = 10;
+
+        List<DBRow> questions = new ArrayList<>();
+        String selectQuery = getQueryQuiz(numQ);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c != null && c.moveToFirst()) {
+            do {
+                DBRow row = new DBRow();
+                row.exam = c.getString(c.getColumnIndex(DBRow.KEY_EXAM));
+                row.year = c.getString(c.getColumnIndex(DBRow.KEY_YEAR));
+                //row.qNo = c.getInt(c.getColumnIndex(DBRow.KEY_QNO));
+                row.question = c.getString(c.getColumnIndex(DBRow.KEY_QUESTION));
+                row.optionA = c.getString(c.getColumnIndex(DBRow.KEY_OPTA));
+                row.optionB = c.getString(c.getColumnIndex(DBRow.KEY_OPTB));
+                row.optionC = c.getString(c.getColumnIndex(DBRow.KEY_OPTC));
+                row.optionD = c.getString(c.getColumnIndex(DBRow.KEY_OPTD));
+                row.answer = c.getString(c.getColumnIndex(DBRow.KEY_ANSWER));
+                row.ipc = c.getString(c.getColumnIndex(DBRow.KEY_IPC));
+                row.subject = c.getString(c.getColumnIndex(DBRow.KEY_SUBJECT));
+
+                // adding to todo list
+                questions.add(row);
+                L.d(className, row.toString());
+            } while (c.moveToNext());
+        }
+
+        return questions;
+    }
+
+    private String getQueryQuiz(int numQ) {
+        return "SELECT DISTINCT * FROM " + TABLE_QBANK + " ORDER BY RANDOM() LIMIT " + numQ;
+    }
+
 /*    public DBUSer checkQuizLevelExists(String quizlevel) {
         SQLiteDatabase db = this.getReadableDatabase();
 

@@ -1,16 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="@color/colorPrimaryDark"
-              android:paddingTop="@dimen/activity_horizontal_margin"
-              android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_vertical"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/btn_start_quiz"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="16dp"
+        android:text="Start Quiz" />
 
     <TextView
-        android:id="@+id/tv_quiz"
-        android:layout_width="match_parent"
+        android:id="@+id/btn_quiz_info"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:padding="16dp"
-        android:text="QUIZ"/>
+        android:maxLines="3"
+        android:textAlignment="center"
+        android:text="Take a quick, random and time-based test. Go to preferences for more settings." />
+
+    <TextView
+        android:id="@+id/btn_quiz_info2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:maxLines="1"
+        android:textAlignment="center"
+        android:text="Good Luck!" />
+
 
 </LinearLayout>

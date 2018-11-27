@@ -1,14 +1,24 @@
 package ee.testprep.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
+import java.util.ArrayList;
+
+import ee.testprep.DBRow;
+import ee.testprep.DataBaseHelper;
+import ee.testprep.L;
+import ee.testprep.MainActivity;
 import ee.testprep.R;
+import ee.testprep.fragment.learn.YearFragment;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -21,15 +31,12 @@ import ee.testprep.R;
 public class QuizFragment extends Fragment {
 
     private static String className = QuizFragment.class.getSimpleName();
+    private DataBaseHelper dbHelper;
+    private String TAG_QUIZ = "quiz";
+    private String TAG_QUIZ_QUESTION = "quizQ";
+    private Fragment quizQFragment;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
@@ -41,17 +48,15 @@ public class QuizFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param dataBaseHelper Parameter 1.
      * @return A new instance of fragment QuizFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static QuizFragment newInstance(String param1, String param2) {
+    public static QuizFragment newInstance(DataBaseHelper dataBaseHelper) {
         QuizFragment fragment = new QuizFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(ARG_PARAM1, dataBaseHelper);
+        fragment.setArguments(bundle);
         return fragment;
     }
 
@@ -59,8 +64,7 @@ public class QuizFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            dbHelper = (DataBaseHelper) getArguments().getSerializable(ARG_PARAM1);
         }
     }
 
@@ -68,7 +72,40 @@ public class QuizFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_quiz, container, false);
+        View view = inflater.inflate(R.layout.fragment_quiz, container, false);
+
+        Button btnStart = view.findViewById(R.id.btn_start_quiz);
+        btnStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(dbHelper != null) {
+                    ArrayList<DBRow> qList = (ArrayList<DBRow>)dbHelper.queryQuestionsQuiz();
+                    quizQFragment = QuizQuestion.newInstance(dbHelper, qList.get(0));
+
+                    Runnable mPendingRunnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            // update the main content by replacing fragments
+                            Fragment fragment = quizQFragment;
+                            FragmentTransaction fragmentTransaction =
+                                    getFragmentManager().beginTransaction();
+                            fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
+                                    android.R.animator.fade_out);
+                            fragmentTransaction.replace(R.id.frame, fragment, TAG_QUIZ_QUESTION)
+                                    .addToBackStack(MainActivity.CURRENT_TAG);
+                            fragmentTransaction.commitAllowingStateLoss();
+                        }
+                    };
+
+                    // If mPendingRunnable is not null, then add to the message queue
+                    MainActivity.mUIHandler.post(mPendingRunnable);
+                }
+                else
+                    L.e(className, "DataBaseHelper returned null");
+            }
+        });
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

@@ -1,6 +1,5 @@
 package ee.testprep;
 
-import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -24,7 +23,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import ee.testprep.fragment.*;
+import ee.testprep.fragment.HomeFragment;
+import ee.testprep.fragment.LearnFragment;
+import ee.testprep.fragment.ModelTestFragment;
+import ee.testprep.fragment.QuizFragment;
+import ee.testprep.fragment.SettingsFragment;
+import ee.testprep.fragment.StatsFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -275,7 +279,7 @@ public class MainActivity extends AppCompatActivity {
                 LearnFragment learnFragment = LearnFragment.newInstance(dbHelper);
                 return learnFragment;
             case 3:
-                QuizFragment quizFragment = new QuizFragment();
+                QuizFragment quizFragment = QuizFragment.newInstance(dbHelper);
                 return quizFragment;
             case 4:
                 ModelTestFragment modelTestFragment = new ModelTestFragment();

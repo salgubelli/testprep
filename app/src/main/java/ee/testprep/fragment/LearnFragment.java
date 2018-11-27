@@ -41,7 +41,6 @@ public class LearnFragment extends Fragment {
     public static String TAG_YEAR = "year";
     public static String TAG_SUBJECT = "subject";
     public static String TAG_EXAM = "exam";
-    public static String CURRENT_TAG = TAG_YEAR;
 
     private YearFragment yearFragment;
     private SubjectFragment subjectFragment;
@@ -99,7 +98,8 @@ public class LearnFragment extends Fragment {
                                     getFragmentManager().beginTransaction();
                             fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
                                     android.R.animator.fade_out);
-                            fragmentTransaction.replace(R.id.frame, fragment, TAG_YEAR).addToBackStack("learn");
+                            fragmentTransaction.replace(R.id.frame, fragment, TAG_YEAR).
+                                    addToBackStack(MainActivity.CURRENT_TAG);
                             fragmentTransaction.commitAllowingStateLoss();
                         }
                     };
