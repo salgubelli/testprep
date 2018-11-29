@@ -35,16 +35,7 @@ public class YearFragment extends Fragment{
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param years Parameter 2.
-     * @return A new instance of fragment YearFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static YearFragment newInstance(String param1, ArrayList<String> years) {
+    public static YearFragment newInstance(ArrayList<String> years) {
         YearFragment fragment = new YearFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_PARAM1, years);
@@ -78,7 +69,7 @@ public class YearFragment extends Fragment{
             public void onItemClick(AdapterView<?> parent, final View view,
                                     int position, long id) {
                 final String item = (String) parent.getItemAtPosition(position);
-
+                onButtonPressed(MainActivity.STATUS_LEARN_YEAR_XX, item);
             }
 
         });
@@ -100,9 +91,9 @@ public class YearFragment extends Fragment{
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(int status) {
+    public void onButtonPressed(int status, String year) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(status);
+            mListener.onFragmentInteraction(status, year);
         }
     }
 

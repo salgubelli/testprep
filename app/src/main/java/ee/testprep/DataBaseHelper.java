@@ -275,7 +275,7 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
 
     public List<DBRow> queryYearExt(String year) {
         List<DBRow> questions = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + TABLE_QBANK + " WHERE " + year;
+        String selectQuery = "SELECT * FROM " + TABLE_QBANK + " WHERE year=\"" + year + "\"";
 
         L.d(className, "Query by " + year);
 
@@ -309,7 +309,7 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
 
     public List<DBRow> querySubjectExt(String subject) {
         List<DBRow> questions = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + TABLE_QBANK + " WHERE " + subject;
+        String selectQuery = "SELECT * FROM " + TABLE_QBANK + " WHERE subject=\"" + subject + "\"";
 
         L.d(className, "Query by " + subject);
 
@@ -344,7 +344,7 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
 
     public List<DBRow> queryExamExt(String exam) {
         List<DBRow> questions = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + TABLE_QBANK + " WHERE " + exam;
+        String selectQuery = "SELECT * FROM " + TABLE_QBANK + " WHERE examName=\"" + exam + "\"";
 
         L.d(className, "Query by " + exam);
 

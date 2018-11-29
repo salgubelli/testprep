@@ -89,6 +89,11 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     public static final int STATUS_LEARN_EXAM = 2004;
     public static final int STATUS_LEARN_USERSTATUS = 2005;
 
+    public static final int STATUS_LEARN_YEAR_XX = 3002;
+    public static final int STATUS_LEARN_SUBJECT_XX = 3003;
+    public static final int STATUS_LEARN_EXAM_XX = 3004;
+    public static final int STATUS_LEARN_USERSTATUS_XX = 3005;
+
     private YearFragment yearFragment;
     private SubjectFragment subjectFragment;
     private ExamFragment examFragment;
@@ -510,6 +515,28 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
     }
 
+    @Override
+    public void onFragmentInteraction(int status, String filter) {
+
+        switch (status) {
+            case STATUS_LEARN_YEAR_XX:
+                showYearXX(filter);
+                break;
+            case STATUS_LEARN_SUBJECT_XX:
+                showSubjectXX(filter);
+                break;
+            case STATUS_LEARN_EXAM_XX:
+                showExamXX(filter);
+                break;
+            case STATUS_LEARN_USERSTATUS_XX:
+                showUserStatusXX(filter);
+                break;
+            default:
+                break;
+        }
+
+    }
+
     private ArrayList<DBRow> quizList;
     private int questionIndex = 0;
     private Fragment quizQFragment;
@@ -608,7 +635,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     private void showYears() {
         if(dbHelper != null) {
             ArrayList<String> years = dbHelper.queryYear();
-            yearFragment = YearFragment.newInstance("", years);
+            yearFragment = YearFragment.newInstance(years);
 
             Runnable mPendingRunnable = new Runnable() {
                 @Override
@@ -688,6 +715,97 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     }
 
     private void showUserStatus() {
+
+    }
+
+    private void showYearXX(String year) {
+
+        if(dbHelper != null) {
+            ArrayList<DBRow> questions = (ArrayList<DBRow>) dbHelper.queryYearExt(year);
+            quizQFragment = QuizQuestion.newInstance(questions.get(0));
+
+            Runnable mPendingRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    // update the main content by replacing fragments
+                    Fragment fragment = quizQFragment;
+                    FragmentTransaction fragmentTransaction =
+                            getFragmentManager().beginTransaction();
+                    fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
+                            android.R.animator.fade_out);
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_YEAR).
+                            addToBackStack(TAG_LEARN);
+                    fragmentTransaction.commitAllowingStateLoss();
+                }
+            };
+
+            // If mPendingRunnable is not null, then add to the message queue
+            MainActivity.mUIHandler.post(mPendingRunnable);
+        }
+        else
+            L.e(className, "DataBaseHelper returned null");
+
+    }
+
+    private void showSubjectXX(String subject) {
+
+        if(dbHelper != null) {
+            ArrayList<DBRow> questions = (ArrayList<DBRow>) dbHelper.querySubjectExt(subject);
+            quizQFragment = QuizQuestion.newInstance(questions.get(0));
+
+            Runnable mPendingRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    // update the main content by replacing fragments
+                    Fragment fragment = quizQFragment;
+                    FragmentTransaction fragmentTransaction =
+                            getFragmentManager().beginTransaction();
+                    fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
+                            android.R.animator.fade_out);
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_YEAR).
+                            addToBackStack(TAG_LEARN);
+                    fragmentTransaction.commitAllowingStateLoss();
+                }
+            };
+
+            // If mPendingRunnable is not null, then add to the message queue
+            MainActivity.mUIHandler.post(mPendingRunnable);
+        }
+        else
+            L.e(className, "DataBaseHelper returned null");
+
+    }
+
+    private void showExamXX(String exam) {
+
+        if(dbHelper != null) {
+            ArrayList<DBRow> questions = (ArrayList<DBRow>) dbHelper.queryExamExt(exam);
+            quizQFragment = QuizQuestion.newInstance(questions.get(0));
+
+            Runnable mPendingRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    // update the main content by replacing fragments
+                    Fragment fragment = quizQFragment;
+                    FragmentTransaction fragmentTransaction =
+                            getFragmentManager().beginTransaction();
+                    fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
+                            android.R.animator.fade_out);
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_YEAR).
+                            addToBackStack(TAG_LEARN);
+                    fragmentTransaction.commitAllowingStateLoss();
+                }
+            };
+
+            // If mPendingRunnable is not null, then add to the message queue
+            MainActivity.mUIHandler.post(mPendingRunnable);
+        }
+        else
+            L.e(className, "DataBaseHelper returned null");
+
+    }
+
+    private void showUserStatusXX(String status) {
 
     }
 

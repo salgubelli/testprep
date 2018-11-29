@@ -12,4 +12,5 @@ package ee.testprep.fragment;
  */
 public interface OnFragmentInteractionListener {
     void onFragmentInteraction(int status);
+    void onFragmentInteraction(int status, String filter);
 }

@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import java.util.ArrayList;
 
+import ee.testprep.MainActivity;
 import ee.testprep.R;
 import ee.testprep.fragment.OnFragmentInteractionListener;
 
@@ -61,6 +62,7 @@ public class ExamFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, final View view,
                                     int position, long id) {
                 final String item = (String) parent.getItemAtPosition(position);
+                onButtonPressed(MainActivity.STATUS_LEARN_EXAM_XX, item);
             }
 
         });
@@ -82,9 +84,9 @@ public class ExamFragment extends Fragment {
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(int status) {
+    public void onButtonPressed(int status, String exam) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(status);
+            mListener.onFragmentInteraction(status, exam);
         }
     }
 
