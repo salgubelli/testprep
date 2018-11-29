@@ -530,7 +530,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                     fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
                             android.R.animator.fade_out);
                     fragmentTransaction.replace(R.id.frame, fragment, TAG_QUIZ_QUESTION)
-                            .addToBackStack(CURRENT_TAG);
+                            .addToBackStack(TAG_QUIZ);
                     fragmentTransaction.commitAllowingStateLoss();
                 }
             };
@@ -558,7 +558,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                     fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
                             android.R.animator.fade_out);
                     fragmentTransaction.replace(R.id.frame, fragment, TAG_QUIZ_QUESTION)
-                            .addToBackStack(CURRENT_TAG);
+                            .addToBackStack(TAG_QUIZ);
                     fragmentTransaction.commitAllowingStateLoss();
                 }
             };
@@ -586,7 +586,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                     fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
                             android.R.animator.fade_out);
                     fragmentTransaction.replace(R.id.frame, fragment, TAG_QUIZ_QUESTION)
-                            .addToBackStack(CURRENT_TAG);
+                            .addToBackStack(TAG_QUIZ);
                     fragmentTransaction.commitAllowingStateLoss();
                 }
             };

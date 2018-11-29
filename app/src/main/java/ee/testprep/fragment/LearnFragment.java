@@ -29,13 +29,6 @@ public class LearnFragment extends Fragment {
     public LearnFragment() {
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @return A new instance of fragment LearnFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static LearnFragment newInstance() {
         LearnFragment fragment = new LearnFragment();
         Bundle bundle = new Bundle();
