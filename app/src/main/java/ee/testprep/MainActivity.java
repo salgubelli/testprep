@@ -1,14 +1,16 @@
 package ee.testprep;
 
+import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.FloatingActionButton;
+
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -23,42 +25,74 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 import ee.testprep.fragment.HomeFragment;
 import ee.testprep.fragment.LearnFragment;
 import ee.testprep.fragment.ModelTestFragment;
+import ee.testprep.fragment.OnFragmentInteractionListener;
 import ee.testprep.fragment.QuizFragment;
+import ee.testprep.fragment.QuizQuestion;
 import ee.testprep.fragment.SettingsFragment;
 import ee.testprep.fragment.StatsFragment;
+import ee.testprep.fragment.learn.ExamFragment;
+import ee.testprep.fragment.learn.SubjectFragment;
+import ee.testprep.fragment.learn.UserStatusFragment;
+import ee.testprep.fragment.learn.YearFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener {
 
     private String className = getClass().getSimpleName();
+    private Context mContext;
 
     private DataBaseHelper dbHelper;
     private NavigationView navigationView;
     private DrawerLayout drawer;
     private View navHeader;
     private ImageView imgProfile;
-    private TextView txtName, txtWebsite;
+    private TextView txtWebsite;
     private Toolbar toolbar;
-    private FloatingActionButton fab;
-
-    // urls to load navigation header background image
-    // and profile image
-    private static final String urlNavHeaderBg = "http://api.androidhive.info/images/nav-menu-header-bg.jpg";
-    private static final String urlProfileImg = "https://lh3.googleusercontent.com/eCtE_G34M9ygdkmOpYvCag1vBARCmZwnVS6rS5t4JLzJ6QgQSBquM0nuTsCpLhYbKljoyS-txg";
-
-    // index to identify current nav menu item
-    public static int navItemIndex = 0;
 
     // tags used to attach the fragments
-    private static final String TAG_HOME = "home";
-    private static final String TAG_STATS = "stats";
-    private static final String TAG_LEARN = "learn";
-    private static final String TAG_QUIZ = "quiz";
-    private static final String TAG_MODELTEST = "model_test";
-    private static final String TAG_SETTINGS = "settings";
+    public static final String TAG_HOME = "home";
+    public static final String TAG_LEARN = "learn";
+    public static final String TAG_QUIZ = "quiz";
+    public static final String TAG_MODELTEST = "model_test";
+    public static final String TAG_STATS = "stats";
+    public static final String TAG_SETTINGS = "settings";
+
+    public static final String TAG_YEAR = "year";
+    public static final String TAG_SUBJECT = "subject";
+    public static final String TAG_EXAM = "exam";
+    public static final String TAG_USERSTATUS = "userstatus";
+
+    public static final String TAG_QUIZ_QUESTION = "quizQ";
+
+    private static final int INDEX_HOME = 0;
+    private static final int INDEX_LEARN = 1;
+    private static final int INDEX_QUIZ = 2;
+    private static final int INDEX_MODELTEST = 3;
+    private static final int INDEX_STATS = 4;
+    private static final int INDEX_SETTINGS = 5;
+
+    public static int navItemIndex = INDEX_HOME;
     public static String CURRENT_TAG = TAG_HOME;
+
+    public static final int STATUS_QUIZ_START = 1001;
+    public static final int STATUS_QUIZ_NEXT = 1002;
+    public static final int STATUS_QUIZ_PREVIOUS = 1003;
+    public static final int STATUS_QUIZ_END = 1004;
+
+    public static final int STATUS_LEARN = 2001;
+    public static final int STATUS_LEARN_YEAR = 2002;
+    public static final int STATUS_LEARN_SUBJECT = 2003;
+    public static final int STATUS_LEARN_EXAM = 2004;
+    public static final int STATUS_LEARN_USERSTATUS = 2005;
+
+    private YearFragment yearFragment;
+    private SubjectFragment subjectFragment;
+    private ExamFragment examFragment;
+    private UserStatusFragment userStatusFragment;
 
     // toolbar titles respected to selected nav menu item
     private String[] activityTitles;
@@ -74,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mContext = getApplicationContext();
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -81,24 +116,14 @@ public class MainActivity extends AppCompatActivity {
 
         drawer = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
-        fab = findViewById(R.id.fab);
 
         // Navigation view header
         navHeader = navigationView.getHeaderView(0);
-        txtName = navHeader.findViewById(R.id.companyName);
         txtWebsite = navHeader.findViewById(R.id.website);
         imgProfile = navHeader.findViewById(R.id.img_profile);
 
         // load toolbar titles from string resources
         activityTitles = getResources().getStringArray(R.array.nav_item_activity_titles);
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         // load nav menu header data
         loadNavHeader();
@@ -125,6 +150,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setUpNavigationView() {
+
+        //remove the icon tint; this makes the icon look colored
+        navigationView.setItemIconTintList(null);
+
         //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
 
@@ -137,32 +166,32 @@ public class MainActivity extends AppCompatActivity {
 
                     //Replacing the main content with ContentFragment Which is our Inbox View;a
                     case R.id.nav_home:
-                        navItemIndex = 0;
+                        navItemIndex = INDEX_HOME;
                         CURRENT_TAG = TAG_HOME;
                         break;
 
-                    case R.id.nav_stats:
-                        navItemIndex = 1;
-                        CURRENT_TAG = TAG_STATS;
-                        break;
-
                     case R.id.nav_learn:
-                        navItemIndex = 2;
+                        navItemIndex = INDEX_LEARN;
                         CURRENT_TAG = TAG_LEARN;
                         break;
 
                     case R.id.nav_quiz:
-                        navItemIndex = 3;
+                        navItemIndex = INDEX_QUIZ;
                         CURRENT_TAG = TAG_QUIZ;
                         break;
 
                     case R.id.nav_modeltest:
-                        navItemIndex = 4;
+                        navItemIndex = INDEX_MODELTEST;
                         CURRENT_TAG = TAG_MODELTEST;
                         break;
 
+                    case R.id.nav_stats:
+                        navItemIndex = INDEX_STATS;
+                        CURRENT_TAG = TAG_STATS;
+                        break;
+
                     case R.id.nav_settings:
-                        navItemIndex = 5;
+                        navItemIndex = INDEX_SETTINGS;
                         CURRENT_TAG = TAG_SETTINGS;
                         break;
 
@@ -177,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
                         return true;
 
                     default:
-                        navItemIndex = 0;
+                        navItemIndex = INDEX_HOME;
                         CURRENT_TAG = TAG_HOME;
                         break;
                 }
@@ -227,8 +256,8 @@ public class MainActivity extends AppCompatActivity {
      */
     private void loadNavHeader() {
         // name, website
-        txtName.setText("Test Preparation");
-        txtWebsite.setText("Equality Empowerment");
+//        txtName.setText("Test Prep");
+//        txtWebsite.setText("equality.org");
 
 /*
         // loading header background image
@@ -254,14 +283,6 @@ public class MainActivity extends AppCompatActivity {
         navigationView.getMenu().getItem(navItemIndex).setChecked(true);
     }
 
-    // show or hide the fab
-    private void toggleFab() {
-        if (navItemIndex == 0)
-            fab.show();
-        else
-            fab.hide();
-    }
-
     public Handler getUIHandler() {
         return mUIHandler;
     }
@@ -269,22 +290,22 @@ public class MainActivity extends AppCompatActivity {
 
     private Fragment getHomeFragment() {
         switch (navItemIndex) {
-            case 0:
+            case INDEX_HOME:
                 HomeFragment homeFragment = new HomeFragment();
                 return homeFragment;
-            case 1:
-                StatsFragment statsFragment = new StatsFragment();
-                return statsFragment;
-            case 2:
-                LearnFragment learnFragment = LearnFragment.newInstance(dbHelper);
+            case INDEX_LEARN:
+                LearnFragment learnFragment = LearnFragment.newInstance();
                 return learnFragment;
-            case 3:
-                QuizFragment quizFragment = QuizFragment.newInstance(dbHelper);
+            case INDEX_QUIZ:
+                QuizFragment quizFragment = QuizFragment.newInstance();
                 return quizFragment;
-            case 4:
+            case INDEX_MODELTEST:
                 ModelTestFragment modelTestFragment = new ModelTestFragment();
                 return modelTestFragment;
-            case 5:
+            case INDEX_STATS:
+                StatsFragment statsFragment = new StatsFragment();
+                return statsFragment;
+            case INDEX_SETTINGS:
                 SettingsFragment settingsFragment = new SettingsFragment();
                 return settingsFragment;
             default:
@@ -293,7 +314,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setToolbarTitle() {
-        getSupportActionBar().setTitle(activityTitles[navItemIndex]);
+        getSupportActionBar().setTitle(getApplicationName() + ": " + activityTitles[navItemIndex]);
+    }
+
+    private String getApplicationName() {
+        ApplicationInfo applicationInfo = mContext.getApplicationInfo();
+        int stringId = applicationInfo.labelRes;
+        return stringId == 0 ? applicationInfo.nonLocalizedLabel.toString() : mContext.getString(stringId);
     }
 
     /***
@@ -311,9 +338,6 @@ public class MainActivity extends AppCompatActivity {
         // just close the navigation drawer
         if (getSupportFragmentManager().findFragmentByTag(CURRENT_TAG) != null) {
             drawer.closeDrawers();
-
-            // show or hide the fab button
-            toggleFab();
             return;
         }
 
@@ -339,9 +363,6 @@ public class MainActivity extends AppCompatActivity {
             mUIHandler.post(mPendingRunnable);
         }
 
-        // show or hide the fab button
-        toggleFab();
-
         //Closing drawer on item click
         drawer.closeDrawers();
 
@@ -361,8 +382,8 @@ public class MainActivity extends AppCompatActivity {
         if (loadHomeOnBackPress) {
             // checking if user is on other navigation menu
             // rather than home
-            if (navItemIndex != 0) {
-                navItemIndex = 0;
+            if (navItemIndex != INDEX_HOME) {
+                navItemIndex = INDEX_HOME;
                 CURRENT_TAG = TAG_HOME;
                 loadHomeFragment();
                 return;
@@ -452,5 +473,222 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onFragmentInteraction(int status) {
+
+        switch (status) {
+            case STATUS_QUIZ_START:
+                startQuiz();
+                break;
+            case STATUS_QUIZ_NEXT:
+                nextQuizQuestion();
+                break;
+            case STATUS_QUIZ_PREVIOUS:
+                prevQuizQuestion();
+                break;
+            case STATUS_QUIZ_END:
+                break;
+            case STATUS_LEARN:
+                showFilters();
+                break;
+            case STATUS_LEARN_YEAR:
+                showYears();
+                break;
+            case STATUS_LEARN_SUBJECT:
+                showSubjects();
+                break;
+            case STATUS_LEARN_EXAM:
+                showExams();
+                break;
+            case STATUS_LEARN_USERSTATUS:
+                showUserStatus();
+                break;
+
+            default:
+                break;
+        }
+
+    }
+
+    private ArrayList<DBRow> quizList;
+    private int questionIndex = 0;
+    private Fragment quizQFragment;
+
+    private void startQuiz() {
+
+        if(dbHelper != null) {
+            quizList = (ArrayList<DBRow>)dbHelper.queryQuestionsQuiz();
+            quizQFragment = QuizQuestion.newInstance((quizList.get(questionIndex)));
+
+            Runnable mPendingRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    // update the main content by replacing fragments
+                    Fragment fragment = quizQFragment;
+                    FragmentTransaction fragmentTransaction =
+                            getFragmentManager().beginTransaction();
+                    fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
+                            android.R.animator.fade_out);
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_QUIZ_QUESTION)
+                            .addToBackStack(CURRENT_TAG);
+                    fragmentTransaction.commitAllowingStateLoss();
+                }
+            };
+
+            // If mPendingRunnable is not null, then add to the message queue
+            mUIHandler.post(mPendingRunnable);
+        }
+        else {
+            L.e(className, "DataBaseHelper returned null");
+        }
+    }
+
+    private void nextQuizQuestion() {
+
+        if(dbHelper != null) {
+            quizQFragment = QuizQuestion.newInstance((quizList.get(++questionIndex)));
+
+            Runnable mPendingRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    // update the main content by replacing fragments
+                    Fragment fragment = quizQFragment;
+                    FragmentTransaction fragmentTransaction =
+                            getFragmentManager().beginTransaction();
+                    fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
+                            android.R.animator.fade_out);
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_QUIZ_QUESTION)
+                            .addToBackStack(CURRENT_TAG);
+                    fragmentTransaction.commitAllowingStateLoss();
+                }
+            };
+
+            // If mPendingRunnable is not null, then add to the message queue
+            mUIHandler.post(mPendingRunnable);
+        }
+        else {
+            L.e(className, "DataBaseHelper returned null");
+        }
+    }
+
+    private void prevQuizQuestion() {
+
+        if(dbHelper != null) {
+            quizQFragment = QuizQuestion.newInstance((quizList.get(--questionIndex)));
+
+            Runnable mPendingRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    // update the main content by replacing fragments
+                    Fragment fragment = quizQFragment;
+                    FragmentTransaction fragmentTransaction =
+                            getFragmentManager().beginTransaction();
+                    fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
+                            android.R.animator.fade_out);
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_QUIZ_QUESTION)
+                            .addToBackStack(CURRENT_TAG);
+                    fragmentTransaction.commitAllowingStateLoss();
+                }
+            };
+
+            // If mPendingRunnable is not null, then add to the message queue
+            mUIHandler.post(mPendingRunnable);
+        }
+        else {
+            L.e(className, "DataBaseHelper returned null");
+        }
+    }
+
+    //************************* LEARN **************************************************//
+
+    private void showFilters() {
+
+    }
+
+    private void showYears() {
+        if(dbHelper != null) {
+            ArrayList<String> years = dbHelper.queryYear();
+            yearFragment = YearFragment.newInstance("", years);
+
+            Runnable mPendingRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    // update the main content by replacing fragments
+                    Fragment fragment = yearFragment;
+                    FragmentTransaction fragmentTransaction =
+                            getFragmentManager().beginTransaction();
+                    fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
+                            android.R.animator.fade_out);
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_YEAR).
+                            addToBackStack(TAG_LEARN);
+                    fragmentTransaction.commitAllowingStateLoss();
+                }
+            };
+
+            // If mPendingRunnable is not null, then add to the message queue
+            MainActivity.mUIHandler.post(mPendingRunnable);
+        }
+        else
+            L.e(className, "DataBaseHelper returned null");
+
+    }
+
+    private void showSubjects() {
+        if(dbHelper != null) {
+            ArrayList<String> subjects = dbHelper.querySubject();
+            subjectFragment = SubjectFragment.newInstance(subjects);
+
+            Runnable mPendingRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    // update the main content by replacing fragments
+                    Fragment fragment = subjectFragment;
+                    FragmentTransaction fragmentTransaction =
+                            getFragmentManager().beginTransaction();
+                    fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
+                            android.R.animator.fade_out);
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_SUBJECT).addToBackStack(TAG_LEARN);;
+                    fragmentTransaction.commitAllowingStateLoss();
+                }
+            };
+
+            // If mPendingRunnable is not null, then add to the message queue
+            MainActivity.mUIHandler.post(mPendingRunnable);
+        }
+        else
+            L.e(className, "DataBaseHelper returned null");
+
+    }
+
+    private void showExams() {
+        if(dbHelper != null) {
+            ArrayList<String> exams = dbHelper.queryExam();
+            examFragment = ExamFragment.newInstance(exams);
+
+            Runnable mPendingRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    // update the main content by replacing fragments
+                    Fragment fragment = examFragment;
+                    FragmentTransaction fragmentTransaction =
+                            getFragmentManager().beginTransaction();
+                    fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
+                            android.R.animator.fade_out);
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_EXAM).addToBackStack(TAG_LEARN);
+                    fragmentTransaction.commitAllowingStateLoss();
+                }
+            };
+
+            // If mPendingRunnable is not null, then add to the message queue
+            MainActivity.mUIHandler.post(mPendingRunnable);
+        }
+        else
+            L.e(className, "DataBaseHelper returned null");
+
+    }
+
+    private void showUserStatus() {
+
+    }
 
 }
