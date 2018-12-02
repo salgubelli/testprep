@@ -1,4 +1,4 @@
-package ee.testprep.fragment.learn;
+package ee.testprep.fragment.practice;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -61,7 +61,7 @@ public class SubjectFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, final View view,
                                     int position, long id) {
                 final String item = (String) parent.getItemAtPosition(position);
-                onButtonPressed(MainActivity.STATUS_LEARN_SUBJECT_XX, item);
+                onButtonPressed(MainActivity.STATUS_PRACTICE_SUBJECT_XX, item);
             }
 
         });

@@ -1,8 +1,7 @@
-package ee.testprep.fragment.learn;
+package ee.testprep.fragment.practice;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;

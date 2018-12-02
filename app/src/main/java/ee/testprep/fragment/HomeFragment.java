@@ -72,7 +72,7 @@ public class HomeFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment LearnFragment.
+     * @return A new instance of fragment PracticeFragment.
      */
     // TODO: Rename and change types and number of parameters
     public static HomeFragment newInstance() {

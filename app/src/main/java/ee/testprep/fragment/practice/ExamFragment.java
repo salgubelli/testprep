@@ -1,9 +1,8 @@
-package ee.testprep.fragment.learn;
+package ee.testprep.fragment.practice;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -62,7 +61,7 @@ public class ExamFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, final View view,
                                     int position, long id) {
                 final String item = (String) parent.getItemAtPosition(position);
-                onButtonPressed(MainActivity.STATUS_LEARN_EXAM_XX, item);
+                onButtonPressed(MainActivity.STATUS_PRACTICE_EXAM_XX, item);
             }
 
         });

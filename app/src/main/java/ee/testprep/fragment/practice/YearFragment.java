@@ -1,25 +1,19 @@
-package ee.testprep.fragment.learn;
+package ee.testprep.fragment.practice;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-import ee.testprep.L;
 import ee.testprep.MainActivity;
 import ee.testprep.R;
 import ee.testprep.fragment.OnFragmentInteractionListener;
@@ -69,7 +63,7 @@ public class YearFragment extends Fragment{
             public void onItemClick(AdapterView<?> parent, final View view,
                                     int position, long id) {
                 final String item = (String) parent.getItemAtPosition(position);
-                onButtonPressed(MainActivity.STATUS_LEARN_YEAR_XX, item);
+                onButtonPressed(MainActivity.STATUS_PRACTICE_YEAR_XX, item);
             }
 
         });

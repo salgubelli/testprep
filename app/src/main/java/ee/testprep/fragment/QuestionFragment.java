@@ -17,18 +17,18 @@ import ee.testprep.DBRow;
 import ee.testprep.MainActivity;
 import ee.testprep.R;
 
-public class QuizQuestion extends Fragment{
+public class QuestionFragment extends Fragment{
 
-    private static String className = QuizQuestion.class.getSimpleName();
+    private static String className = QuestionFragment.class.getSimpleName();
     private static final String ARG_PARAM1 = "param1";
     private DBRow mQuestion;
     private OnFragmentInteractionListener mListener;
 
-    public QuizQuestion() {
+    public QuestionFragment() {
     }
 
-    public static QuizQuestion newInstance(DBRow question) {
-        QuizQuestion fragment = new QuizQuestion();
+    public static QuestionFragment newInstance(DBRow question) {
+        QuestionFragment fragment = new QuestionFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable(ARG_PARAM1, question);
         fragment.setArguments(bundle);
@@ -48,10 +48,10 @@ public class QuizQuestion extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.quiz_question, container, false);
+        View view = inflater.inflate(R.layout.practice_question, container, false);
 
         TextView tvQuestion = view.findViewById(R.id.question);
-        tvQuestion.setText(mQuestion.question);
+        tvQuestion.setText("Question:\n\n\t\t" + mQuestion.question);
         tvQuestion.setMovementMethod(new ScrollingMovementMethod());
 
         RadioButton tvOptA = view.findViewById(R.id.rb_optA);

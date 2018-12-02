@@ -12,11 +12,14 @@
     <!-- Toolbar titles when navigation menu item is selected -->
     <string-array name="nav_item_activity_titles">
         <item>Home</item>
-        <item>Learn</item>
+        <item>Practice</item>
         <item>Quiz</item>
         <item>Model Test</item>
         <item>Stats</item>
         <item>Settings</item>
+        <item>Feedback</item>
+        <item>Rate Us</item>
+        <item>Donate</item>
     </string-array>
 
     <string name="activity_title_about_us">About Us</string>
