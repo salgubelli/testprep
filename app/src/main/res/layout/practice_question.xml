@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/bg_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:padding="8dp">
 
     <RelativeLayout
         android:id="@+id/question_layout"
@@ -19,7 +20,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-light"
             android:gravity="start"
-            android:text="Question"
+            android:text="@string/question_header"
             android:scrollbars="vertical"
             android:textColor="#000000"
             android:textStyle="bold"
@@ -47,6 +48,7 @@
         android:padding="8dp">
 
         <RelativeLayout
+            android:id="@+id/rg_a"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -74,6 +76,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rg_b"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -101,6 +104,7 @@
 
 
         <RelativeLayout
+            android:id="@+id/rg_c"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -129,6 +133,7 @@
 
 
         <RelativeLayout
+            android:id="@+id/rg_d"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -161,8 +166,7 @@
         android:id="@+id/next_prev_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:padding="8dp">
+        android:layout_alignParentBottom="true">
 
         <Button
             android:id="@+id/previousButton"

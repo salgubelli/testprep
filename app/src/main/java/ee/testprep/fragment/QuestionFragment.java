@@ -3,19 +3,27 @@ package ee.testprep.fragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.method.ScrollingMovementMethod;
+import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+
+import java.util.Arrays;
 
 import ee.testprep.DBRow;
 import ee.testprep.MainActivity;
 import ee.testprep.R;
+import ee.testprep.util.SimpleVibaration;
 
 public class QuestionFragment extends Fragment{
 
@@ -23,6 +31,7 @@ public class QuestionFragment extends Fragment{
     private static final String ARG_PARAM1 = "param1";
     private DBRow mQuestion;
     private OnFragmentInteractionListener mListener;
+    private RadioButton radioButtons[] = new RadioButton[4];
 
     public QuestionFragment() {
     }
@@ -48,20 +57,96 @@ public class QuestionFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.practice_question, container, false);
+        View view = inflater.inflate(R.layout.quiz_question, container, false);
 
         TextView tvQuestion = view.findViewById(R.id.question);
-        tvQuestion.setText("Question:\n\n\t\t" + mQuestion.question);
+        tvQuestion.append(mQuestion.question);
         tvQuestion.setMovementMethod(new ScrollingMovementMethod());
 
-        RadioButton tvOptA = view.findViewById(R.id.rb_optA);
+        final RadioButton tvOptA = view.findViewById(R.id.rb_optA);
         tvOptA.setText(mQuestion.optionA);
-        RadioButton tvOptB = view.findViewById(R.id.rb_optB);
+        radioButtons[0] = tvOptA;
+
+        tvOptA.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mQuestion.answer.toLowerCase().equals("a")) {
+                    tvOptA.setBackground(getResources().getDrawable(R.drawable.rectangle_green));
+                } else {
+                    tvOptA.setBackground(getResources().getDrawable(R.drawable.rectangle_red));
+
+                    new SimpleVibaration(getActivity().getApplicationContext());
+
+                    //get the right answer
+                    String ans = mQuestion.answer.toLowerCase();
+                    int i = getIndexMap(ans);
+                    radioButtons[i].setBackground(getResources().getDrawable(R.drawable.rectangle_green));
+                }
+            }
+        });
+
+        final RadioButton tvOptB = view.findViewById(R.id.rb_optB);
         tvOptB.setText(mQuestion.optionB);
-        RadioButton tvOptC = view.findViewById(R.id.rb_optC);
+        radioButtons[1] = tvOptB;
+        tvOptB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mQuestion.answer.toLowerCase().equals("b")) {
+                    tvOptB.setBackground(getResources().getDrawable(R.drawable.rectangle_green));
+                } else {
+                    tvOptB.setBackground(getResources().getDrawable(R.drawable.rectangle_red));
+
+                    new SimpleVibaration(getActivity().getApplicationContext());
+
+                    //get the right answer
+                    String ans = mQuestion.answer.toLowerCase();
+                    int i = getIndexMap(ans);
+                    radioButtons[i].setBackground(getResources().getDrawable(R.drawable.rectangle_green));
+                }
+            }
+        });
+
+        final RadioButton tvOptC = view.findViewById(R.id.rb_optC);
         tvOptC.setText(mQuestion.optionC);
-        RadioButton tvOptD = view.findViewById(R.id.rb_optD);
+        radioButtons[2] = tvOptC;
+        tvOptC.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mQuestion.answer.toLowerCase().equals("c")) {
+                    tvOptC.setBackground(getResources().getDrawable(R.drawable.rectangle_green));
+                } else {
+                    tvOptC.setBackground(getResources().getDrawable(R.drawable.rectangle_red));
+
+                    new SimpleVibaration(getActivity().getApplicationContext());
+
+                    //get the right answer
+                    String ans = mQuestion.answer.toLowerCase();
+                    int i = getIndexMap(ans);
+                    radioButtons[i].setBackground(getResources().getDrawable(R.drawable.rectangle_green));
+                }
+            }
+        });
+
+        final RadioButton tvOptD = view.findViewById(R.id.rb_optD);
         tvOptD.setText(mQuestion.optionD);
+        radioButtons[3] = tvOptD;
+        tvOptD.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mQuestion.answer.toLowerCase().equals("d")) {
+                    tvOptD.setBackground(getResources().getDrawable(R.drawable.rectangle_green));
+                } else {
+                    tvOptD.setBackground(getResources().getDrawable(R.drawable.rectangle_red));
+
+                    new SimpleVibaration(getActivity().getApplicationContext());
+
+                    //get the right answer
+                    String ans = mQuestion.answer.toLowerCase();
+                    int i = getIndexMap(ans);
+                    radioButtons[i].setBackground(getResources().getDrawable(R.drawable.rectangle_green));
+                }
+            }
+        });
 
         Button btnNext = view.findViewById(R.id.nextButton);
         btnNext.setOnClickListener(new View.OnClickListener() {
@@ -94,6 +179,18 @@ public class QuestionFragment extends Fragment{
 
         // populate the question
         return view;
+    }
+
+    private int getIndexMap(String option) {
+        if(option.equals("a")) {
+            return 0;
+        } else if(option.equals("b")) {
+            return 1;
+        } else if(option.equals("c")) {
+            return 2;
+        } else {
+            return 3;
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event
