@@ -88,34 +88,6 @@ public class HomeFragment extends Fragment {
             {"There is more to life than increasing its speed.", author_gandhi},
     };
 
-    private static String[] mColors = {
-            "#39add1", // light blue
-            "#3079ab", // dark blue
-            "#c25975", // mauve
-            "#e15258", // red
-            "#f9845b", // orange
-            "#838cc7", // lavender
-            "#7d669e", // purple
-            "#53bbb4", // aqua
-            "#51b46d", // green
-            "#e0ab18", // mustard
-            "#637a91", // dark gray
-            "#f092b0", // pink
-            "#FE9A2E",
-            "#0174DF",
-            "#0080FF",
-            "#303F9F",
-            "#FF4081",
-            "#232F34",
-            "#344955",
-            "#2D2D2D",
-            "#1C262A",
-            "#F9AA33",
-            "#FE9A2E",
-            "#5FB404",
-            "#FF0000",
-    };
-
     public HomeFragment() {
     }
 
@@ -153,20 +125,13 @@ public class HomeFragment extends Fragment {
         Random rand = new Random();
         int index = rand.nextInt(quotes.length);
         quote.setText("\"" + quotes[index][0] + "\"");
-        quote.setTextColor(getRandomColor());
-
+        quote.setTextColor(Color.BLACK);
 
         TextView author = view.findViewById(R.id.tv_home_author);
         author.setText(quotes[index][1]);
-        author.setTextColor(getRandomColor());
+        author.setTextColor(Color.BLACK);
 
         return view;
-    }
-
-    private int getRandomColor() {
-        Random randomGenerator = new Random(); // Construct a new Random number generator
-        int rand = randomGenerator.nextInt(mColors.length);
-        return Color.parseColor(mColors[rand]);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

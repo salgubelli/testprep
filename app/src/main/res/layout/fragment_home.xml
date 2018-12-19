@@ -17,6 +17,7 @@
         android:paddingBottom="@dimen/padding_8sp"
         android:text="@string/sample_wish"
         android:textStyle="bold"
+        android:textColor="@color/colorBlack"
         android:textSize="@dimen/big_font"
         android:gravity="center" />
 
@@ -32,6 +33,7 @@
         android:textAlignment="center"
         android:text="@string/sample_quote"
         android:textStyle="italic"
+        android:textColor="@color/colorBlack"
         android:textSize="@dimen/medium2_font"/>
 
     <TextView
@@ -43,6 +45,7 @@
         android:layout_marginEnd="@dimen/padding_8sp"
         android:text="@string/sample_author"
         android:textSize="@dimen/medium_font"
+        android:textColor="@color/colorBlack"
         android:textStyle="bold"
         android:gravity="end"/>
 

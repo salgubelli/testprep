@@ -25,8 +25,8 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">4dp</item>
         <item name="android:padding">2dp</item>
-        <item name="android:layout_marginEnd">20sp</item>
-        <item name="android:layout_marginStart">20sp</item>
+        <item name="android:layout_marginEnd">50sp</item>
+        <item name="android:layout_marginStart">50sp</item>
         <item name="android:color">#1FFFFFFF</item>
         <item name="android:background">?android:attr/listDivider</item>
     </style>
