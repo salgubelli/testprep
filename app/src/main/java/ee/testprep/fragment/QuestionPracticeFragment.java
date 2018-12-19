@@ -53,11 +53,11 @@ public class QuestionPracticeFragment extends Fragment{
         View view = inflater.inflate(R.layout.practice_question, container, false);
 
         TextView tvQuestion = view.findViewById(R.id.question);
-        tvQuestion.append(mQuestion.question);
+        tvQuestion.append(mQuestion.question.trim());
         tvQuestion.setMovementMethod(new ScrollingMovementMethod());
 
         final RadioButton tvOptA = view.findViewById(R.id.rb_optA);
-        tvOptA.setText(mQuestion.optionA);
+        tvOptA.setText(mQuestion.optionA.trim());
         radioButtons[0] = tvOptA;
 
         tvOptA.setOnClickListener(new View.OnClickListener() {
@@ -79,7 +79,7 @@ public class QuestionPracticeFragment extends Fragment{
         });
 
         final RadioButton tvOptB = view.findViewById(R.id.rb_optB);
-        tvOptB.setText(mQuestion.optionB);
+        tvOptB.setText(mQuestion.optionB.trim());
         radioButtons[1] = tvOptB;
         tvOptB.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,7 +100,7 @@ public class QuestionPracticeFragment extends Fragment{
         });
 
         final RadioButton tvOptC = view.findViewById(R.id.rb_optC);
-        tvOptC.setText(mQuestion.optionC);
+        tvOptC.setText(mQuestion.optionC.trim());
         radioButtons[2] = tvOptC;
         tvOptC.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,7 +121,7 @@ public class QuestionPracticeFragment extends Fragment{
         });
 
         final RadioButton tvOptD = view.findViewById(R.id.rb_optD);
-        tvOptD.setText(mQuestion.optionD);
+        tvOptD.setText(mQuestion.optionD.trim());
         radioButtons[3] = tvOptD;
         tvOptD.setOnClickListener(new View.OnClickListener() {
             @Override
