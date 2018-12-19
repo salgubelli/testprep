@@ -1,4 +1,4 @@
-package ee.testprep;
+package ee.testprep.db;
 
 import java.io.Serializable;
 

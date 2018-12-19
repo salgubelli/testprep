@@ -1,4 +1,4 @@
-package ee.testprep;
+package ee.testprep.db;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -7,7 +7,6 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
-import android.util.Log;
 
 import com.aspose.cells.Cell;
 import com.aspose.cells.FileFormatType;
@@ -21,10 +20,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import ee.testprep.L;
 
 public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
 

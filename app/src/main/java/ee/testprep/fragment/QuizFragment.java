@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import ee.testprep.DataBaseHelper;
 import ee.testprep.MainActivity;
 import ee.testprep.R;
 

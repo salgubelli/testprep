@@ -3,12 +3,8 @@ package ee.testprep.fragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.method.ScrollingMovementMethod;
-import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,12 +12,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import java.util.Arrays;
-
-import ee.testprep.DBRow;
+import ee.testprep.db.DBRow;
 import ee.testprep.MainActivity;
 import ee.testprep.R;
 import ee.testprep.util.SimpleVibaration;

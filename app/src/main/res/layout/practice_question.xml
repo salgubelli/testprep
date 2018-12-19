@@ -30,6 +30,7 @@
             android:id="@+id/iv_ques"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="@string/question_image"
             android:maxWidth="250sp"
             android:maxHeight="250sp"
             android:layout_alignParentBottom="true"
@@ -200,7 +201,7 @@
             android:layout_height="40dp"
             android:background="@drawable/rectangle"
             android:text="@string/next"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:textColor="#46cf47"
             android:textSize="@dimen/medium_font" />
     </RelativeLayout>

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import ee.testprep.db.DBRow;
+
 public class QuizMetrics {
     private int mNumQuestions;
     private ArrayList<DBRow> mQList;
