@@ -74,86 +74,17 @@ public class QuestionFragment extends Fragment{
         tvOptA.setText(mQuestion.optionA);
         radioButtons[0] = tvOptA;
 
-        tvOptA.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(mQuestion.answer.toLowerCase().equals("a")) {
-                    tvOptA.setBackground(getResources().getDrawable(R.drawable.rectangle_green));
-                } else {
-                    tvOptA.setBackground(getResources().getDrawable(R.drawable.rectangle_red));
-
-                    new SimpleVibaration(getActivity().getApplicationContext());
-
-                    //get the right answer
-                    String ans = mQuestion.answer.toLowerCase();
-                    int i = getIndexMap(ans);
-                    radioButtons[i].setBackground(getResources().getDrawable(R.drawable.rectangle_green));
-                }
-            }
-        });
-
         final RadioButton tvOptB = view.findViewById(R.id.rb_optB);
         tvOptB.setText(mQuestion.optionB);
         radioButtons[1] = tvOptB;
-        tvOptB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(mQuestion.answer.toLowerCase().equals("b")) {
-                    tvOptB.setBackground(getResources().getDrawable(R.drawable.rectangle_green));
-                } else {
-                    tvOptB.setBackground(getResources().getDrawable(R.drawable.rectangle_red));
-
-                    new SimpleVibaration(getActivity().getApplicationContext());
-
-                    //get the right answer
-                    String ans = mQuestion.answer.toLowerCase();
-                    int i = getIndexMap(ans);
-                    radioButtons[i].setBackground(getResources().getDrawable(R.drawable.rectangle_green));
-                }
-            }
-        });
 
         final RadioButton tvOptC = view.findViewById(R.id.rb_optC);
         tvOptC.setText(mQuestion.optionC);
         radioButtons[2] = tvOptC;
-        tvOptC.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(mQuestion.answer.toLowerCase().equals("c")) {
-                    tvOptC.setBackground(getResources().getDrawable(R.drawable.rectangle_green));
-                } else {
-                    tvOptC.setBackground(getResources().getDrawable(R.drawable.rectangle_red));
-
-                    new SimpleVibaration(getActivity().getApplicationContext());
-
-                    //get the right answer
-                    String ans = mQuestion.answer.toLowerCase();
-                    int i = getIndexMap(ans);
-                    radioButtons[i].setBackground(getResources().getDrawable(R.drawable.rectangle_green));
-                }
-            }
-        });
 
         final RadioButton tvOptD = view.findViewById(R.id.rb_optD);
         tvOptD.setText(mQuestion.optionD);
         radioButtons[3] = tvOptD;
-        tvOptD.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(mQuestion.answer.toLowerCase().equals("d")) {
-                    tvOptD.setBackground(getResources().getDrawable(R.drawable.rectangle_green));
-                } else {
-                    tvOptD.setBackground(getResources().getDrawable(R.drawable.rectangle_red));
-
-                    new SimpleVibaration(getActivity().getApplicationContext());
-
-                    //get the right answer
-                    String ans = mQuestion.answer.toLowerCase();
-                    int i = getIndexMap(ans);
-                    radioButtons[i].setBackground(getResources().getDrawable(R.drawable.rectangle_green));
-                }
-            }
-        });
 
         Button btnNext = view.findViewById(R.id.nextButton);
         btnNext.setOnClickListener(new View.OnClickListener() {
