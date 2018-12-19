@@ -6,7 +6,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import ee.testprep.MainActivity;
 import ee.testprep.R;
@@ -15,6 +19,17 @@ public class PracticeFragment extends Fragment {
 
     private static String className = PracticeFragment.class.getSimpleName();
     private OnFragmentInteractionListener mListener;
+
+    private final static String mFilter[][] = {
+            {"Year", "ex: 2016"},
+            {"Subject", "ex: Politics"},
+            {"Exam", "ex: CSP"},
+            {"Easy", "scale: 0-3"},
+            {"Medium", "scale 4-7"},
+            {"Hard", "scale: 8-10"},
+            {"Random", "random"},
+            {"Starred", "to review later"}
+    };
 
     public PracticeFragment() {
     }
@@ -39,35 +54,41 @@ public class PracticeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_practice, container, false);
 
-        Button btnYear = view.findViewById(R.id.bt_learn_year);
-        btnYear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onButtonPressed(MainActivity.STATUS_PRACTICE_YEAR);
-            }
-        });
+        GridView gridView = view.findViewById(R.id.practice_gridview);
+        final FilterAdapter filterAdapter = new FilterAdapter(getActivity(), mFilter);
+        gridView.setAdapter(filterAdapter);
 
-        Button btnSubject = view.findViewById(R.id.bt_learn_subject);
-        btnSubject.setOnClickListener(new View.OnClickListener() {
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View view) {
-                onButtonPressed(MainActivity.STATUS_PRACTICE_SUBJECT);
-            }
-        });
-
-        Button btnExam = view.findViewById(R.id.bt_learn_exam);
-        btnExam.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onButtonPressed(MainActivity.STATUS_PRACTICE_EXAM);
-            }
-        });
-
-        Button btnUserStatus = view.findViewById(R.id.bt_learn_userstatus);
-        btnUserStatus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onButtonPressed(MainActivity.STATUS_PRACTICE_USERSTATUS);
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //String filter = mFilter[position][0];
+                //filterAdapter.notifyDataSetChanged();
+                switch (position) {
+                    case 0:
+                        onButtonPressed(MainActivity.STATUS_PRACTICE_YEAR);
+                        break;
+                    case 1:
+                        onButtonPressed(MainActivity.STATUS_PRACTICE_SUBJECT);
+                        break;
+                    case 2:
+                        onButtonPressed(MainActivity.STATUS_PRACTICE_EXAM);
+                        break;
+                    case 3:
+                        onButtonPressed(MainActivity.STATUS_PRACTICE_EASY);
+                        break;
+                    case 4:
+                        onButtonPressed(MainActivity.STATUS_PRACTICE_MEDIUM);
+                        break;
+                    case 5:
+                        onButtonPressed(MainActivity.STATUS_PRACTICE_HARD);
+                        break;
+                    case 6:
+                        onButtonPressed(MainActivity.STATUS_PRACTICE_RANDOM);
+                        break;
+                    case 7:
+                        onButtonPressed(MainActivity.STATUS_PRACTICE_USERSTATUS);
+                        break;
+                }
             }
         });
 
@@ -95,6 +116,74 @@ public class PracticeFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    public class FilterAdapter extends BaseAdapter {
+
+        private final Context mContext;
+        private String mFilter[][];
+
+        public FilterAdapter(Context context, String[][] filter) {
+            this.mContext = context;
+            this.mFilter = filter;
+        }
+
+        @Override
+        public int getCount() {
+            return mFilter.length;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        private boolean getIsLocked() {
+            return false; //TODO
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            final String filterName = mFilter[position][0];
+            final String filterExample = mFilter[position][1];
+
+            if (convertView == null) {
+                final LayoutInflater layoutInflater = LayoutInflater.from(mContext);
+                convertView = layoutInflater.inflate(R.layout.gridview_practice_item, null);
+
+                final ImageView lockImageView = convertView.findViewById(R.id.imageview_unlock);
+                final TextView nameTextView = convertView.findViewById(R.id.textview_filter_name);
+                final TextView exampleTextView = convertView.findViewById(R.id.textview_example);
+
+                final ViewHolder viewHolder = new ViewHolder(nameTextView, exampleTextView, lockImageView);
+                convertView.setTag(viewHolder);
+            }
+
+            final ViewHolder viewHolder = (ViewHolder)convertView.getTag();
+            viewHolder.nameTextView.setText(filterName);
+            viewHolder.exampleTextView.setText(filterExample);
+            viewHolder.lockImageview.setImageResource(getIsLocked() ? R.drawable.lock : R.drawable.unlock);
+
+            return convertView;
+        }
+
+        private class ViewHolder {
+            private final TextView nameTextView;
+            private final TextView exampleTextView;
+            private final ImageView lockImageview;
+
+            public ViewHolder(TextView nameTextView, TextView exampleTextView, ImageView lockImageview) {
+                this.nameTextView = nameTextView;
+                this.exampleTextView = exampleTextView;
+                this.lockImageview = lockImageview;
+            }
+        }
     }
 
 }

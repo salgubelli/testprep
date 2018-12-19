@@ -9,6 +9,6 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:textSize="24sp"
-        android:text="to be done"/>
+        android:text="Coming Soon"/>
 
 </android.support.constraint.ConstraintLayout>

@@ -9,8 +9,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -18,11 +20,11 @@ import ee.testprep.MainActivity;
 import ee.testprep.R;
 import ee.testprep.fragment.OnFragmentInteractionListener;
 
-public class YearFragment extends Fragment{
+public class YearFragment extends Fragment {
 
     private static String className = YearFragment.class.getSimpleName();
     private static final String ARG_PARAM1 = "param1";
-    private ArrayList<String> years;
+    private String[] mYears;
     private OnFragmentInteractionListener mListener;
 
     public YearFragment() {
@@ -41,7 +43,7 @@ public class YearFragment extends Fragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            years = (ArrayList<String>) getArguments().getSerializable(ARG_PARAM1);
+            mYears = ((ArrayList<String>) getArguments().getSerializable(ARG_PARAM1)).toArray(new String[0]);
         }
     }
 
@@ -51,21 +53,16 @@ public class YearFragment extends Fragment{
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_year, container, false);
 
-        final ListView listview = view.findViewById(R.id.lv_year);
+        GridView gridView = view.findViewById(R.id.year_gridview);
+        final YearFragment.FilterAdapter filterAdapter = new YearFragment.FilterAdapter(getActivity(), mYears);
+        gridView.setAdapter(filterAdapter);
 
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(container.getContext(), R.layout.listview_item, R.id.icon, years);
-
-        listview.setAdapter(adapter);
-        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, final View view,
-                                    int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 final String item = (String) parent.getItemAtPosition(position);
                 onButtonPressed(MainActivity.STATUS_PRACTICE_YEAR_XX, item);
             }
-
         });
 
         view.setFocusableInTouchMode(true);
@@ -106,6 +103,69 @@ public class YearFragment extends Fragment{
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    public class FilterAdapter extends BaseAdapter {
+
+        private final Context mContext;
+        private String mFilter[];
+
+        public FilterAdapter(Context context, String[] filter) {
+            this.mContext = context;
+            this.mFilter = filter;
+        }
+
+        @Override
+        public int getCount() {
+            return mFilter.length;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return mFilter[position];
+        }
+
+        private boolean getIsLocked() {
+            return false; //TODO
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            final String filterName = mFilter[position];
+
+            if (convertView == null) {
+                final LayoutInflater layoutInflater = LayoutInflater.from(mContext);
+                convertView = layoutInflater.inflate(R.layout.gridview_year_item, null);
+
+                final TextView nameTextView = convertView.findViewById(R.id.textview_filter_name);
+                final ImageView lockImageView = convertView.findViewById(R.id.imageview_unlock);
+
+                final YearFragment.FilterAdapter.ViewHolder viewHolder = new YearFragment.FilterAdapter.ViewHolder(nameTextView, lockImageView);
+                convertView.setTag(viewHolder);
+            }
+
+            final YearFragment.FilterAdapter.ViewHolder viewHolder = (YearFragment.FilterAdapter.ViewHolder)convertView.getTag();
+            viewHolder.nameTextView.setText(filterName);
+            viewHolder.lockImageView.setImageResource(getIsLocked() ? R.drawable.lock : R.drawable.unlock);
+
+            return convertView;
+        }
+
+        private class ViewHolder {
+            private final TextView nameTextView;
+            private final ImageView lockImageView;
+
+            public ViewHolder(TextView nameTextView, ImageView lockImageView) {
+                this.nameTextView = nameTextView;
+                this.lockImageView = lockImageView;
+            }
+        }
     }
 
 }

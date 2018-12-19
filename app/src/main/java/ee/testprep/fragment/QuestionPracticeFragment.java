@@ -3,12 +3,8 @@ package ee.testprep.fragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.method.ScrollingMovementMethod;
-import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,39 +12,30 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
-
-import java.util.Arrays;
 
 import ee.testprep.DBRow;
 import ee.testprep.MainActivity;
 import ee.testprep.R;
 import ee.testprep.util.SimpleVibaration;
 
-public class QuestionFragment extends Fragment{
+public class QuestionPracticeFragment extends Fragment{
 
-    private static String TAG = QuestionFragment.class.getSimpleName();
+    private static String TAG = QuestionPracticeFragment.class.getSimpleName();
     private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
     private DBRow mQuestion;
-    private int mNumQuestions;
     private OnFragmentInteractionListener mListener;
     private RadioButton radioButtons[] = new RadioButton[4];
-    private TextView tvTimer;
-    private static ProgressBar mProgressBar;
     private String recordedAnswer;
 
-    public QuestionFragment() {
+    public QuestionPracticeFragment() {
     }
 
-    public static QuestionFragment newInstance(DBRow question, int numQuestions) {
-        QuestionFragment fragment = new QuestionFragment();
+    public static QuestionPracticeFragment newInstance(DBRow question) {
+        QuestionPracticeFragment fragment = new QuestionPracticeFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable(ARG_PARAM1, question);
-        bundle.putSerializable(ARG_PARAM2, numQuestions);
         fragment.setArguments(bundle);
-
         return fragment;
     }
 
@@ -57,7 +44,6 @@ public class QuestionFragment extends Fragment{
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mQuestion = (DBRow) getArguments().getSerializable(ARG_PARAM1);
-            mNumQuestions = (int) getArguments().getSerializable(ARG_PARAM2);
         }
     }
 
@@ -65,13 +51,7 @@ public class QuestionFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.quiz_question, container, false);
-
-        tvTimer = view.findViewById(R.id.timer);
-        tvTimer.setText("");
-
-        mProgressBar = view.findViewById(R.id.progressBar);
-        mProgressBar.setMax(mNumQuestions);
+        View view = inflater.inflate(R.layout.practice_question, container, false);
 
         TextView tvQuestion = view.findViewById(R.id.question);
         tvQuestion.append(mQuestion.question);
@@ -210,22 +190,6 @@ public class QuestionFragment extends Fragment{
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-    public void uiRefresh(final int time, final int currQIndex) {
-
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                int p1 = time % 60;
-                int p2 = time / 60;
-                int p3 = p2 % 60;
-                p2 = p2 / 60;
-                tvTimer.setText(p2 + " : " + p3 + " : " + p1);
-                mProgressBar.setProgress(currQIndex);
-            }
-        });
-
     }
 
     private int getIndexMap(String option) {

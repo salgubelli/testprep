@@ -3,6 +3,7 @@ package ee.testprep;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
@@ -34,6 +35,8 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
     // Table Names
     private static final String TABLE_USERDATA = "userData";
     private static final String TABLE_QBANK = "qBank";
+
+    private static final int MAX_RANDOM_QUESTIONS = 500;
 
     private Workbook workbook;
 
@@ -182,6 +185,13 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
         };
         mThread.start();
 
+    }
+
+    public long getNumofQuestions() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        long count = DatabaseUtils.queryNumEntries(db, TABLE_QBANK);
+        db.close();
+        return count;
     }
 
     public long insertRow(DBRow row) {
@@ -383,7 +393,7 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
         int numQ = 10;
 
         List<DBRow> questions = new ArrayList<>();
-        String selectQuery = getQueryQuiz(numQ);
+        String selectQuery = queryStringRandom(numQ);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -413,7 +423,41 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
         return questions;
     }
 
-    private String getQueryQuiz(int numQ) {
+    public List<DBRow> queryQuestionsRandom() {
+
+        long numQ = Math.min(getNumofQuestions(), MAX_RANDOM_QUESTIONS);
+        List<DBRow> questions = new ArrayList<>();
+        String selectQuery = queryStringRandom(numQ);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c != null && c.moveToFirst()) {
+            do {
+                DBRow row = new DBRow();
+                row.exam = c.getString(c.getColumnIndex(DBRow.KEY_EXAM));
+                row.year = c.getString(c.getColumnIndex(DBRow.KEY_YEAR));
+                //row.qNo = c.getInt(c.getColumnIndex(DBRow.KEY_QNO));
+                row.question = c.getString(c.getColumnIndex(DBRow.KEY_QUESTION));
+                row.optionA = c.getString(c.getColumnIndex(DBRow.KEY_OPTA));
+                row.optionB = c.getString(c.getColumnIndex(DBRow.KEY_OPTB));
+                row.optionC = c.getString(c.getColumnIndex(DBRow.KEY_OPTC));
+                row.optionD = c.getString(c.getColumnIndex(DBRow.KEY_OPTD));
+                row.answer = c.getString(c.getColumnIndex(DBRow.KEY_ANSWER));
+                row.ipc = c.getString(c.getColumnIndex(DBRow.KEY_IPC));
+                row.subject = c.getString(c.getColumnIndex(DBRow.KEY_SUBJECT));
+
+                // adding to todo list
+                questions.add(row);
+                L.d(className, row.toString());
+            } while (c.moveToNext());
+        }
+
+        return questions;
+    }
+
+    public String queryStringRandom(long numQ) {
         return "SELECT DISTINCT * FROM " + TABLE_QBANK + " ORDER BY RANDOM() LIMIT " + numQ;
     }
 
