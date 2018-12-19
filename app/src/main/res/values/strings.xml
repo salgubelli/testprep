@@ -40,4 +40,8 @@
 
     <string name="question_image">QuestionImage</string>
     <string name="remaining_time">Time Remaining:</string>
+
+    <string name="sample_quote">Sample Quote</string>
+    <string name="sample_author">Unknown</string>
+    <string name="sample_wish">Good Morning!</string>
 </resources>

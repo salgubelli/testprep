@@ -9,32 +9,39 @@
         android:id="@+id/tv_home_wish"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="42sp"
-        android:paddingBottom="10sp"
-        android:text="Good Morning!"
-        android:textSize="24sp"
+        android:paddingTop="@dimen/padding_16sp"
+        android:layout_marginStart="@dimen/padding_8sp"
+        android:layout_marginEnd="@dimen/padding_8sp"
+        android:paddingBottom="@dimen/padding_8sp"
+        android:text="@string/sample_wish"
+        android:textStyle="bold"
+        android:textSize="@dimen/big_font"
         android:gravity="center" />
 
-    <View style="@style/Divider"/>
+    <View style="@style/HomeDivider"/>
 
     <TextView
         android:id="@+id/tv_home_quote"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16sp"
-        android:layout_marginStart="10sp"
-        android:layout_marginEnd="10sp"
-        android:maxLines="6"
+        android:padding="@dimen/padding_16sp"
+        android:layout_marginStart="@dimen/padding_8sp"
+        android:layout_marginEnd="@dimen/padding_8sp"
         android:textAlignment="center"
-        android:text="sample quote here"
-        android:textSize="18sp"/>
+        android:text="@string/sample_quote"
+        android:textStyle="italic"
+        android:textSize="@dimen/medium2_font"/>
 
     <TextView
         android:id="@+id/tv_home_author"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:text="- Author Unknown"
-        android:gravity="right"/>
+        android:padding="@dimen/padding_8sp"
+        android:layout_marginStart="@dimen/padding_8sp"
+        android:layout_marginEnd="@dimen/padding_8sp"
+        android:text="@string/sample_author"
+        android:textSize="@dimen/medium_font"
+        android:textStyle="bold"
+        android:gravity="end"/>
 
 </LinearLayout>

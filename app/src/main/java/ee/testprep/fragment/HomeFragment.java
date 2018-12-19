@@ -2,6 +2,7 @@ package ee.testprep.fragment;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,18 +24,40 @@ public class HomeFragment extends Fragment {
     private static String author_gandhi = "- MK Gandhi";
 
     private String[][] quotes = {
-            {"All Birds find shelter during rain, but Eagle avoids rain by flying above clouds.", author_kalam},
+            {"All birds find shelter during rain, but eagle avoids rain by flying above clouds.", author_kalam},
+            {"Our greatest glory is not in never falling, but in rising every time we fall", "- Confucius"},
             {"Don’t take rest after your first victory because if you fail in second, " +
                     "more lips are waiting to say that your first victory was just luck.", author_kalam},
-            {"All of us do not have equal talent. But, all of us have an equal opportunity " +
+            {"All of us do not have equal talent, but all of us have an equal opportunity " +
                     "to develop our talents.", author_kalam},
-            {"You have to dream before your dreams can come true.", "- APJ Kalam"},
+            {"You have to dream before your dreams can come true.", author_kalam},
             {"Failure will never overtake me if my definition to succeed is strong enough.", author_kalam},
+            {"All our dreams can come true, if we have the courage to pursue them.", "- Walt Disney"},
             {"I'm not a handsome guy, but I can give my hand to someone who needs help. " +
                     "Beauty is in the heart, not in the face.", author_kalam},
+            {"It does not matter how slowly you go as long as you do not stop.", "- Confucius"},
+            {"Everything you’ve ever wanted is on the other side of fear.", "- George Addair"},
             {"The best brains of the nations may be found on the last benches of the classrooms.", author_kalam},
             {"You cannot change your future, but, you can change your habits, and surely your " +
                     "habits will change your future.", author_kalam},
+            {"Success is not final, failure is not fatal: it is the courage to continue that counts.",
+                    "- Winston Churchill"},
+            {"Your true success in life begins only when you make the commitment to become excellent " +
+                    "at what you do.", "- Brian Tracy"},
+            {"If you believe it will work out, you’ll see opportunities. If you believe it won’t, " +
+                    "you will see obstacles.", "- Wayne Dyer"},
+            {" Your mind is a powerful thing. When you fill it with positive thoughts, your life " +
+                    "will start to change.", "- Unknown"},
+            {"Most of the important things in the world have been accomplished by people who have " +
+                    "kept on trying when there seemed to be no hope at all.", "- Dale Carnegie"},
+            {"Too many of us are not living our dreams because we are living our fears.", "- Les Brown"},
+            {"Believe in yourself, take on your challenges, dig deep within yourself to conquer fears. " +
+                    "Never let anyone bring you down. You got to keep going.", "- Chantal Sutherland"},
+            {"It’s not whether you get knocked down. It’s whether you get up.", "- Vince Lombardi"},
+            {"There is only one thing that makes a dream impossible to achieve: the fear of failure.", "- Paulo Coelho"},
+            {"Believe in yourself. You are braver than you think, more talented than you know, and " +
+                    "capable of more than you imagine.", "- Roy T. Bennett"},
+            {"Hardships often prepare ordinary people for an extraordinary destiny.", "- C.S.Lewis"},
             {"If you fail, never give up because F.A.I.L. means \"First Attempt In Learning\". " +
                     "End is not the end, if fact E.N.D. means \"Effort Never Dies.\" " +
                     "If you get No as an answer, remember N.O. means \"Next Opportunity\", " +
@@ -63,6 +86,36 @@ public class HomeFragment extends Fragment {
             {"Action is no less necessary than thought to the instinctive tendencies of the human " +
                     "frame.", author_gandhi},
             {"There is more to life than increasing its speed.", author_gandhi},
+    };
+
+    private static String[] mColors = {
+            "#39add1", // light blue
+            "#3079ab", // dark blue
+            "#c25975", // mauve
+            "#e15258", // red
+            "#f9845b", // orange
+            "#838cc7", // lavender
+            "#7d669e", // purple
+            "#53bbb4", // aqua
+            "#51b46d", // green
+            "#e0ab18", // mustard
+            "#637a91", // dark gray
+            "#f092b0", // pink
+            "#b7c0c7",  // light gray
+            "#FE9A2E",
+            "#0174DF",
+            "#0080FF",
+            "#303F9F",
+            "#FF4081",
+            "#232F34",
+            "#344955",
+            "#2D2D2D",
+            "#1C262A",
+            "#F9AA33",
+            "#FE9A2E",
+            "#5FB404",
+            "#FF0000",
+            "#A9A9F5"
     };
 
     public HomeFragment() {
@@ -102,12 +155,20 @@ public class HomeFragment extends Fragment {
         Random rand = new Random();
         int index = rand.nextInt(quotes.length);
         quote.setText(quotes[index][0]);
+        quote.setTextColor(getRandomColor());
+
 
         TextView author = view.findViewById(R.id.tv_home_author);
         author.setText(quotes[index][1]);
-
+        author.setTextColor(getRandomColor());
 
         return view;
+    }
+
+    private int getRandomColor() {
+        Random randomGenerator = new Random(); // Construct a new Random number generator
+        int rand = randomGenerator.nextInt(mColors.length);
+        return Color.parseColor(mColors[rand]);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
