@@ -145,7 +145,7 @@ public class QuestionPracticeFragment extends Fragment{
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onButtonPressed(MainActivity.STATUS_QUIZ_NEXT);
+                onButtonPressed(MainActivity.STATUS_PRACTICE_NEXT);
             }
         });
 
@@ -153,7 +153,7 @@ public class QuestionPracticeFragment extends Fragment{
         btnPrev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onButtonPressed(MainActivity.STATUS_QUIZ_PREVIOUS);
+                onButtonPressed(MainActivity.STATUS_PRACTICE_PREVIOUS);
             }
         });
 

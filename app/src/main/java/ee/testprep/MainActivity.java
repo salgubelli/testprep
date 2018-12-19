@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     public static final String TAG_USERSTATUS = "userstatus";
 
     public static final String TAG_QUIZ_QUESTION = "quizQ";
+    public static final String TAG_PRACTICE_QUESTION = "quizP";
 
     private static final int INDEX_HOME = 0;
     private static final int INDEX_LEARN = 1;
@@ -110,6 +111,8 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     public static final int STATUS_PRACTICE_HARD = 2007;
     public static final int STATUS_PRACTICE_RANDOM = 2008;
     public static final int STATUS_PRACTICE_USERSTATUS = 2009;
+    public static final int STATUS_PRACTICE_NEXT = 2010;
+    public static final int STATUS_PRACTICE_PREVIOUS = 2011;
 
     public static final int STATUS_PRACTICE_YEAR_XX = 3002;
     public static final int STATUS_PRACTICE_SUBJECT_XX = 3003;
@@ -134,9 +137,13 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     private static final int PERMISSION_REQUEST_CODE = 1;
 
     private ArrayList<DBRow> quizList;
+    private QuizMetrics quiz;
+
+    private ArrayList<DBRow> practiceQuestions;
+    private PracticeMetrics practice;
+
     private QuestionFragment questionFragment;
     private QuestionPracticeFragment questionPracticeFragment;
-    private QuizMetrics quiz;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -566,6 +573,12 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             case STATUS_PRACTICE_USERSTATUS:
                 showUserStatus();
                 break;
+            case STATUS_PRACTICE_NEXT:
+                nextPracticeQuestion();
+                break;
+            case STATUS_PRACTICE_PREVIOUS:
+                prevPracticeQuestion();
+                break;
 
             default:
                 break;
@@ -810,9 +823,17 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     private void showHardQuestions() {}
 
     private void showRandomQuestions() {
+
         if(dbHelper != null) {
-            ArrayList<DBRow> questions = (ArrayList<DBRow>) dbHelper.queryQuestionsRandom();
-            questionPracticeFragment = QuestionPracticeFragment.newInstance(questions.get(0));
+
+            //query questions
+            practiceQuestions = (ArrayList<DBRow>) dbHelper.queryQuestionsRandom();
+
+            //start a practice session
+            practice = new PracticeMetrics(practiceQuestions);
+
+            //get a question fragment
+            questionPracticeFragment = QuestionPracticeFragment.newInstance(practiceQuestions.get(0));
 
             Runnable mPendingRunnable = new Runnable() {
                 @Override
@@ -840,8 +861,15 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     private void showYearXX(String year) {
 
         if(dbHelper != null) {
-            ArrayList<DBRow> questions = (ArrayList<DBRow>) dbHelper.queryYearExt(year);
-            questionPracticeFragment = QuestionPracticeFragment.newInstance(questions.get(0));
+
+            //query questions
+            practiceQuestions = (ArrayList<DBRow>) dbHelper.queryYearExt(year);
+
+            //start a practice session
+            practice = new PracticeMetrics(practiceQuestions);
+
+            //get a question fragment
+            questionPracticeFragment = QuestionPracticeFragment.newInstance(practiceQuestions.get(0));
 
             Runnable mPendingRunnable = new Runnable() {
                 @Override
@@ -870,8 +898,14 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     private void showSubjectXX(String subject) {
 
         if(dbHelper != null) {
-            ArrayList<DBRow> questions = (ArrayList<DBRow>) dbHelper.querySubjectExt(subject);
-            questionPracticeFragment = QuestionPracticeFragment.newInstance(questions.get(0));
+            //query questions
+            practiceQuestions = (ArrayList<DBRow>) dbHelper.querySubjectExt(subject);
+
+            //start a practice session
+            practice = new PracticeMetrics(practiceQuestions);
+
+            //get a question fragment
+            questionPracticeFragment = QuestionPracticeFragment.newInstance(practiceQuestions.get(0));
 
             Runnable mPendingRunnable = new Runnable() {
                 @Override
@@ -900,8 +934,14 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     private void showExamXX(String exam) {
 
         if(dbHelper != null) {
-            ArrayList<DBRow> questions = (ArrayList<DBRow>) dbHelper.queryExamExt(exam);
-            questionPracticeFragment = QuestionPracticeFragment.newInstance(questions.get(0));
+            //query questions
+            practiceQuestions = (ArrayList<DBRow>) dbHelper.queryExamExt(exam);
+
+            //start a practice session
+            practice = new PracticeMetrics(practiceQuestions);
+
+            //get a question fragment
+            questionPracticeFragment = QuestionPracticeFragment.newInstance(practiceQuestions.get(0));
 
             Runnable mPendingRunnable = new Runnable() {
                 @Override
@@ -930,6 +970,68 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     private void showUserStatusXX(String status) {
 
     }
+
+    private void nextPracticeQuestion() {
+
+        if(dbHelper != null) {
+            DBRow question = practice.getNextQuestion();
+            if(question != null) {
+                questionPracticeFragment = QuestionPracticeFragment.newInstance(question);
+
+                Runnable mPendingRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        // update the main content by replacing fragments
+                        Fragment fragment = questionPracticeFragment;
+                        FragmentTransaction fragmentTransaction =
+                                getFragmentManager().beginTransaction();
+                        fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
+                                android.R.animator.fade_out);
+                        fragmentTransaction.replace(R.id.frame, fragment, TAG_PRACTICE_QUESTION)
+                                .addToBackStack(TAG_PRACTICE);
+                        fragmentTransaction.commitAllowingStateLoss();
+                    }
+                };
+
+                // If mPendingRunnable is not null, then add to the message queue
+                mUIHandler.post(mPendingRunnable);
+            }
+        }
+        else {
+            L.e(className, "DataBaseHelper returned null");
+        }
+    }
+
+    private void prevPracticeQuestion() {
+
+        if(dbHelper != null) {
+            DBRow question = practice.getPrevQuestion();
+            if(question != null) {
+                questionPracticeFragment = QuestionPracticeFragment.newInstance(question);
+                Runnable mPendingRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        // update the main content by replacing fragments
+                        Fragment fragment = questionPracticeFragment;
+                        FragmentTransaction fragmentTransaction =
+                                getFragmentManager().beginTransaction();
+                        fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
+                                android.R.animator.fade_out);
+                        fragmentTransaction.replace(R.id.frame, fragment, TAG_PRACTICE_QUESTION)
+                                .addToBackStack(TAG_PRACTICE);
+                        fragmentTransaction.commitAllowingStateLoss();
+                    }
+                };
+
+                // If mPendingRunnable is not null, then add to the message queue
+                mUIHandler.post(mPendingRunnable);
+            }
+        }
+        else {
+            L.e(className, "DataBaseHelper returned null");
+        }
+    }
+
 
 
     /******************************* END OF PRACTICE **********************************************/

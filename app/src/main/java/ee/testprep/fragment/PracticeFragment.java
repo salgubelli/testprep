@@ -17,7 +17,7 @@ import ee.testprep.R;
 
 public class PracticeFragment extends Fragment {
 
-    private static String className = PracticeFragment.class.getSimpleName();
+    private static String TAG = PracticeFragment.class.getSimpleName();
     private OnFragmentInteractionListener mListener;
 
     private final static String mFilter[][] = {

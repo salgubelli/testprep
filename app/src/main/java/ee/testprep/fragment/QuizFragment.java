@@ -15,7 +15,7 @@ import ee.testprep.R;
 
 public class QuizFragment extends Fragment {
 
-    private static String className = QuizFragment.class.getSimpleName();
+    private static String TAG = QuizFragment.class.getSimpleName();
     private OnFragmentInteractionListener mListener;
 
     public QuizFragment() {
