@@ -101,7 +101,6 @@ public class HomeFragment extends Fragment {
             "#e0ab18", // mustard
             "#637a91", // dark gray
             "#f092b0", // pink
-            "#b7c0c7",  // light gray
             "#FE9A2E",
             "#0174DF",
             "#0080FF",
@@ -115,7 +114,6 @@ public class HomeFragment extends Fragment {
             "#FE9A2E",
             "#5FB404",
             "#FF0000",
-            "#A9A9F5"
     };
 
     public HomeFragment() {
@@ -154,7 +152,7 @@ public class HomeFragment extends Fragment {
         TextView quote = view.findViewById(R.id.tv_home_quote);
         Random rand = new Random();
         int index = rand.nextInt(quotes.length);
-        quote.setText(quotes[index][0]);
+        quote.setText("\"" + quotes[index][0] + "\"");
         quote.setTextColor(getRandomColor());
 
 
