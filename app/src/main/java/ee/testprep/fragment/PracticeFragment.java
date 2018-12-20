@@ -25,8 +25,8 @@ public class PracticeFragment extends Fragment {
             {"Subject", "ex: Politics"},
             {"Exam", "ex: CSP"},
             {"Easy", "scale: 0-3"},
-            {"Medium", "scale 4-7"},
-            {"Hard", "scale: 8-10"},
+            {"Medium", "scale 4-6"},
+            {"Hard", "scale: 7-9"},
             {"Random", "random"},
             {"Starred", "to review later"}
     };

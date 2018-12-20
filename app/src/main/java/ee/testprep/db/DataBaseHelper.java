@@ -36,7 +36,7 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
     private static final String TABLE_USERDATA = "userData";
     private static final String TABLE_QBANK = "qBank";
 
-    private static final int MAX_RANDOM_QUESTIONS = 500;
+    private static final int MAX_QUESTIONS = 500;
 
     private Workbook workbook;
 
@@ -53,7 +53,10 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
             + DBRow.KEY_OPTD + " TEXT, "
             + DBRow.KEY_ANSWER + " TEXT, "
             + DBRow.KEY_IPC + " TEXT, "
-            + DBRow.KEY_SUBJECT + " TEXT)";
+            + DBRow.KEY_SUBJECT + " TEXT, "
+            + DBRow.KEY_CHAPTER + " INTEGER, "
+            + DBRow.KEY_DIFFICULTY + " INTEGER, "
+            + DBRow.KEY_USER_STATUS + " INTEGER)";
 
     private static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + TABLE_QBANK;
 
@@ -99,7 +102,7 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
             @Override
             public void run() {
                 //File file = new File(getExternalFilesDir(null), "dummy.xlsx");
-                File file = new File("/sdcard/dummy.xlsx");
+                File file = new File("/sdcard/QBank_v1.xlsx");
 
                 FileInputStream fstream;
                 LoadOptions loadOptions = new LoadOptions(FileFormatType.XLSX);
@@ -171,6 +174,16 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
                                 case 10:
                                     dbRow.subject = cell.getDisplayStringValue();
                                     break;
+                                case 11:
+                                    dbRow.chapter = Integer.valueOf(cell.getDisplayStringValue());
+                                    break;
+                                case 12:
+                                    dbRow.difficulty = Integer.valueOf(cell.getDisplayStringValue());
+                                    break;
+                                case 13:
+                                    dbRow.userStatus = Integer.valueOf(cell.getDisplayStringValue());
+                                    break;
+
                                 default:
                                     break;
                             }
@@ -187,14 +200,14 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
 
     }
 
-    public long getNumofQuestions() {
+    private long getNumofQuestions() {
         SQLiteDatabase db = this.getWritableDatabase();
         long count = DatabaseUtils.queryNumEntries(db, TABLE_QBANK);
         db.close();
         return count;
     }
 
-    public long insertRow(DBRow row) {
+    private long insertRow(DBRow row) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -209,6 +222,9 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
         values.put(DBRow.KEY_ANSWER, row.answer);
         values.put(DBRow.KEY_IPC, row.ipc);
         values.put(DBRow.KEY_SUBJECT, row.subject);
+        values.put(DBRow.KEY_CHAPTER, row.chapter);
+        values.put(DBRow.KEY_DIFFICULTY, row.difficulty);
+        values.put(DBRow.KEY_USER_STATUS, row.userStatus);
 
         // insert row
         return db.insert(TABLE_QBANK, null, values);
@@ -229,7 +245,6 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
 
                 if (year != null && !year.equals("")) {
                     yearList.add(year);
-                    L.v(className, "penke " + year);
                 }
             } while (c.moveToNext());
         }
@@ -252,7 +267,6 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
 
                 if (sub != null && !sub.equals("")) {
                     subList.add(sub);
-                    L.v(className, "penke " + sub);
                 }
             } while (c.moveToNext());
         }
@@ -275,7 +289,6 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
 
                 if (exam != null && !exam.equals("")) {
                     examList.add(exam);
-                    L.v(className, "penke " + exam);
                 }
             } while (c.moveToNext());
         }
@@ -341,6 +354,9 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
                 row.answer = c.getString(c.getColumnIndex(DBRow.KEY_ANSWER));
                 row.ipc = c.getString(c.getColumnIndex(DBRow.KEY_IPC));
                 row.subject = c.getString(c.getColumnIndex(DBRow.KEY_SUBJECT));
+                row.chapter = c.getInt(c.getColumnIndex(DBRow.KEY_CHAPTER));
+                row.difficulty = c.getInt(c.getColumnIndex(DBRow.KEY_DIFFICULTY));
+                row.userStatus = c.getInt(c.getColumnIndex(DBRow.KEY_USER_STATUS));
 
                 // adding to todo list
                 questions.add(row);
@@ -376,6 +392,9 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
                 row.answer = c.getString(c.getColumnIndex(DBRow.KEY_ANSWER));
                 row.ipc = c.getString(c.getColumnIndex(DBRow.KEY_IPC));
                 row.subject = c.getString(c.getColumnIndex(DBRow.KEY_SUBJECT));
+                row.chapter = c.getInt(c.getColumnIndex(DBRow.KEY_CHAPTER));
+                row.difficulty = c.getInt(c.getColumnIndex(DBRow.KEY_DIFFICULTY));
+                row.userStatus = c.getInt(c.getColumnIndex(DBRow.KEY_USER_STATUS));
 
                 // adding to todo list
                 questions.add(row);
@@ -413,6 +432,9 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
                 row.answer = c.getString(c.getColumnIndex(DBRow.KEY_ANSWER));
                 row.ipc = c.getString(c.getColumnIndex(DBRow.KEY_IPC));
                 row.subject = c.getString(c.getColumnIndex(DBRow.KEY_SUBJECT));
+                row.chapter = c.getInt(c.getColumnIndex(DBRow.KEY_CHAPTER));
+                row.difficulty = c.getInt(c.getColumnIndex(DBRow.KEY_DIFFICULTY));
+                row.userStatus = c.getInt(c.getColumnIndex(DBRow.KEY_USER_STATUS));
 
                 // adding to todo list
                 questions.add(row);
@@ -425,7 +447,7 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
 
     public List<DBRow> queryQuestionsRandom() {
 
-        long numQ = Math.min(getNumofQuestions(), MAX_RANDOM_QUESTIONS);
+        long numQ = Math.min(getNumofQuestions(), MAX_QUESTIONS);
         List<DBRow> questions = new ArrayList<>();
         String selectQuery = queryStringRandom(numQ);
 
@@ -447,6 +469,9 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
                 row.answer = c.getString(c.getColumnIndex(DBRow.KEY_ANSWER));
                 row.ipc = c.getString(c.getColumnIndex(DBRow.KEY_IPC));
                 row.subject = c.getString(c.getColumnIndex(DBRow.KEY_SUBJECT));
+                row.chapter = c.getInt(c.getColumnIndex(DBRow.KEY_CHAPTER));
+                row.difficulty = c.getInt(c.getColumnIndex(DBRow.KEY_DIFFICULTY));
+                row.userStatus = c.getInt(c.getColumnIndex(DBRow.KEY_USER_STATUS));
 
                 // adding to todo list
                 questions.add(row);
@@ -457,8 +482,93 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
         return questions;
     }
 
-    public String queryStringRandom(long numQ) {
+    private String queryStringRandom(long numQ) {
         return "SELECT DISTINCT * FROM " + TABLE_QBANK + " ORDER BY RANDOM() LIMIT " + numQ;
+    }
+
+    private String queryStringDifficulty(String difficulty) {
+        return "SELECT * FROM " + TABLE_QBANK + " WHERE difficulty BETWEEN " + difficulty;
+    }
+
+    private String queryStringUserStatus() {
+        return "SELECT * FROM " + TABLE_QBANK + " WHERE userstatus=-1";
+    }
+
+    /* Difficulty level definition
+        Easy =>     "0 AND 3"
+        Medium =>   "4 AND 6"
+        Hard =>     "7 AND 9"
+     */
+    public List<DBRow> queryQuestionsDifficulty(String difficulty) {
+
+        List<DBRow> questions = new ArrayList<>();
+        String selectQuery = queryStringDifficulty(difficulty);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c != null && c.moveToFirst()) {
+            do {
+                DBRow row = new DBRow();
+                row.exam = c.getString(c.getColumnIndex(DBRow.KEY_EXAM));
+                row.year = c.getString(c.getColumnIndex(DBRow.KEY_YEAR));
+                //row.qNo = c.getInt(c.getColumnIndex(DBRow.KEY_QNO));
+                row.question = c.getString(c.getColumnIndex(DBRow.KEY_QUESTION));
+                row.optionA = c.getString(c.getColumnIndex(DBRow.KEY_OPTA));
+                row.optionB = c.getString(c.getColumnIndex(DBRow.KEY_OPTB));
+                row.optionC = c.getString(c.getColumnIndex(DBRow.KEY_OPTC));
+                row.optionD = c.getString(c.getColumnIndex(DBRow.KEY_OPTD));
+                row.answer = c.getString(c.getColumnIndex(DBRow.KEY_ANSWER));
+                row.ipc = c.getString(c.getColumnIndex(DBRow.KEY_IPC));
+                row.subject = c.getString(c.getColumnIndex(DBRow.KEY_SUBJECT));
+                row.chapter = c.getInt(c.getColumnIndex(DBRow.KEY_CHAPTER));
+                row.difficulty = c.getInt(c.getColumnIndex(DBRow.KEY_DIFFICULTY));
+                row.userStatus = c.getInt(c.getColumnIndex(DBRow.KEY_USER_STATUS));
+
+                // adding to todo list
+                questions.add(row);
+                L.d(className, row.toString());
+            } while (c.moveToNext());
+        }
+
+        return questions;
+    }
+
+    public List<DBRow> queryQuestionsUserStatus() {
+
+        List<DBRow> questions = new ArrayList<>();
+        String selectQuery = queryStringUserStatus();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c != null && c.moveToFirst()) {
+            do {
+                DBRow row = new DBRow();
+                row.exam = c.getString(c.getColumnIndex(DBRow.KEY_EXAM));
+                row.year = c.getString(c.getColumnIndex(DBRow.KEY_YEAR));
+                //row.qNo = c.getInt(c.getColumnIndex(DBRow.KEY_QNO));
+                row.question = c.getString(c.getColumnIndex(DBRow.KEY_QUESTION));
+                row.optionA = c.getString(c.getColumnIndex(DBRow.KEY_OPTA));
+                row.optionB = c.getString(c.getColumnIndex(DBRow.KEY_OPTB));
+                row.optionC = c.getString(c.getColumnIndex(DBRow.KEY_OPTC));
+                row.optionD = c.getString(c.getColumnIndex(DBRow.KEY_OPTD));
+                row.answer = c.getString(c.getColumnIndex(DBRow.KEY_ANSWER));
+                row.ipc = c.getString(c.getColumnIndex(DBRow.KEY_IPC));
+                row.subject = c.getString(c.getColumnIndex(DBRow.KEY_SUBJECT));
+                row.chapter = c.getInt(c.getColumnIndex(DBRow.KEY_CHAPTER));
+                row.difficulty = c.getInt(c.getColumnIndex(DBRow.KEY_DIFFICULTY));
+                row.userStatus = c.getInt(c.getColumnIndex(DBRow.KEY_USER_STATUS));
+
+                // adding to todo list
+                questions.add(row);
+                L.d(className, row.toString());
+            } while (c.moveToNext());
+        }
+
+        return questions;
     }
 
 /*    public DBUSer checkQuizLevelExists(String quizlevel) {

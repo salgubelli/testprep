@@ -15,6 +15,8 @@ public class DBRow implements Serializable {
     public static final String KEY_ANSWER = "answer";
     public static final String KEY_IPC = "ipc";
     public static final String KEY_SUBJECT = "subject";
+    public static final String KEY_CHAPTER = "chapter";
+    public static final String KEY_DIFFICULTY = "difficulty";
     public static final String KEY_USER_STATUS = "userstatus";
 
     public String exam;
@@ -28,8 +30,9 @@ public class DBRow implements Serializable {
     public String answer;
     public String ipc;
     public String subject;
-    //0 not read, 1 completed, -1 to_review_later
-    public Integer userStatus = 0;
+    public Integer chapter;
+    public Integer difficulty;
+    public Integer userStatus = 0;//0 not read, 1 completed, -1 to_review_later
 
     @Override
     public String toString() {

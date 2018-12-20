@@ -33,6 +33,7 @@ import ee.testprep.db.DataBaseHelper;
 import ee.testprep.fragment.DonateFragment;
 import ee.testprep.fragment.FeedbackFragment;
 import ee.testprep.fragment.HomeFragment;
+import ee.testprep.fragment.NothingToShowFragment;
 import ee.testprep.fragment.PracticeFragment;
 import ee.testprep.fragment.ModelTestFragment;
 import ee.testprep.fragment.OnFragmentInteractionListener;
@@ -78,7 +79,12 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     public static final String TAG_MEDIUM = "medium";
     public static final String TAG_HARD = "hard";
     public static final String TAG_RANDOM = "random";
+    public static final String TAG_NOTHING_TO_SHOW = "nothing";
     public static final String TAG_USERSTATUS = "userstatus";
+    public static final String TAG_YEAR_XX = "yearxx";
+    public static final String TAG_SUBJECT_XX = "subjectxx";
+    public static final String TAG_EXAM_XX = "examxx";
+
 
     public static final String TAG_QUIZ_QUESTION = "quizQ";
     public static final String TAG_PRACTICE_QUESTION = "quizP";
@@ -648,7 +654,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                     fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
                             android.R.animator.fade_out);
                     fragmentTransaction.replace(R.id.frame, fragment, TAG_QUIZ_QUESTION)
-                            .addToBackStack(TAG_QUIZ);
+                            .addToBackStack(TAG_HOME);
                     fragmentTransaction.commitAllowingStateLoss();
                 }
             };
@@ -816,11 +822,168 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
     private void showUserStatus() {
 
+        if(dbHelper != null) {
+            //query questions
+            practiceQuestions = (ArrayList<DBRow>) dbHelper.queryQuestionsUserStatus();
+
+            if(practiceQuestions.isEmpty()) {
+                //no questions in this category, show empty fragment
+                final Fragment nothingToShowFragment = NothingToShowFragment.newInstance();
+
+                Runnable mPendingRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        // update the main content by replacing fragments
+                        Fragment fragment = nothingToShowFragment;
+                        FragmentTransaction fragmentTransaction =
+                                getFragmentManager().beginTransaction();
+                        fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
+                                android.R.animator.fade_out);
+                        fragmentTransaction.replace(R.id.frame, fragment, TAG_NOTHING_TO_SHOW).
+                                addToBackStack(TAG_PRACTICE);
+                        fragmentTransaction.commitAllowingStateLoss();
+                    }
+                };
+
+                // If mPendingRunnable is not null, then add to the message queue
+                MainActivity.mUIHandler.post(mPendingRunnable);
+
+            } else {
+                //start a practice session
+                practice = new PracticeMetrics(practiceQuestions);
+
+                //get a question fragment
+                questionPracticeFragment = QuestionPracticeFragment.newInstance(practiceQuestions.get(0));
+
+                Runnable mPendingRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        // update the main content by replacing fragments
+                        Fragment fragment = questionPracticeFragment;
+                        FragmentTransaction fragmentTransaction =
+                                getFragmentManager().beginTransaction();
+                        fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
+                                android.R.animator.fade_out);
+                        fragmentTransaction.replace(R.id.frame, fragment, TAG_RANDOM).
+                                addToBackStack(TAG_PRACTICE);
+                        fragmentTransaction.commitAllowingStateLoss();
+                    }
+                };
+
+                // If mPendingRunnable is not null, then add to the message queue
+                MainActivity.mUIHandler.post(mPendingRunnable);
+            }
+
+        }
+        else {
+            L.e(className, "DataBaseHelper returned null");
+        }
     }
 
-    private void showEasyQuestions() {}
-    private void showMediumQuestions() {}
-    private void showHardQuestions() {}
+    private void showEasyQuestions() {
+
+        if(dbHelper != null) {
+            //query questions
+            practiceQuestions = (ArrayList<DBRow>) dbHelper.queryQuestionsDifficulty("0 AND 3");
+
+            //start a practice session
+            practice = new PracticeMetrics(practiceQuestions);
+
+            //get a question fragment
+            questionPracticeFragment = QuestionPracticeFragment.newInstance(practiceQuestions.get(0));
+
+            Runnable mPendingRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    // update the main content by replacing fragments
+                    Fragment fragment = questionPracticeFragment;
+                    FragmentTransaction fragmentTransaction =
+                            getFragmentManager().beginTransaction();
+                    fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
+                            android.R.animator.fade_out);
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_RANDOM).
+                            addToBackStack(TAG_PRACTICE);
+                    fragmentTransaction.commitAllowingStateLoss();
+                }
+            };
+
+            // If mPendingRunnable is not null, then add to the message queue
+            MainActivity.mUIHandler.post(mPendingRunnable);
+        }
+        else {
+            L.e(className, "DataBaseHelper returned null");
+        }
+    }
+
+    private void showMediumQuestions() {
+
+        if(dbHelper != null) {
+            //query questions
+            practiceQuestions = (ArrayList<DBRow>) dbHelper.queryQuestionsDifficulty("4 AND 6");
+
+            //start a practice session
+            practice = new PracticeMetrics(practiceQuestions);
+
+            //get a question fragment
+            questionPracticeFragment = QuestionPracticeFragment.newInstance(practiceQuestions.get(0));
+
+            Runnable mPendingRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    // update the main content by replacing fragments
+                    Fragment fragment = questionPracticeFragment;
+                    FragmentTransaction fragmentTransaction =
+                            getFragmentManager().beginTransaction();
+                    fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
+                            android.R.animator.fade_out);
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_RANDOM).
+                            addToBackStack(TAG_PRACTICE);
+                    fragmentTransaction.commitAllowingStateLoss();
+                }
+            };
+
+            // If mPendingRunnable is not null, then add to the message queue
+            MainActivity.mUIHandler.post(mPendingRunnable);
+        }
+        else {
+            L.e(className, "DataBaseHelper returned null");
+        }
+    }
+
+    private void showHardQuestions() {
+
+        if(dbHelper != null) {
+            //query questions
+            practiceQuestions = (ArrayList<DBRow>) dbHelper.queryQuestionsDifficulty("7 AND 9");
+
+            //start a practice session
+            practice = new PracticeMetrics(practiceQuestions);
+
+            //get a question fragment
+            questionPracticeFragment = QuestionPracticeFragment.newInstance(practiceQuestions.get(0));
+
+            Runnable mPendingRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    // update the main content by replacing fragments
+                    Fragment fragment = questionPracticeFragment;
+                    FragmentTransaction fragmentTransaction =
+                            getFragmentManager().beginTransaction();
+                    fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
+                            android.R.animator.fade_out);
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_RANDOM).
+                            addToBackStack(TAG_PRACTICE);
+                    fragmentTransaction.commitAllowingStateLoss();
+                }
+            };
+
+            // If mPendingRunnable is not null, then add to the message queue
+            MainActivity.mUIHandler.post(mPendingRunnable);
+        }
+        else {
+            L.e(className, "DataBaseHelper returned null");
+        }
+    }
 
     private void showRandomQuestions() {
 
@@ -880,8 +1043,8 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                             getFragmentManager().beginTransaction();
                     fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
                             android.R.animator.fade_out);
-                    fragmentTransaction.replace(R.id.frame, fragment, TAG_YEAR).
-                            addToBackStack(TAG_PRACTICE);
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_PRACTICE_QUESTION).
+                            addToBackStack(TAG_YEAR);
                     fragmentTransaction.commitAllowingStateLoss();
                 }
             };
@@ -916,8 +1079,8 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                             getFragmentManager().beginTransaction();
                     fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
                             android.R.animator.fade_out);
-                    fragmentTransaction.replace(R.id.frame, fragment, TAG_SUBJECT).
-                            addToBackStack(TAG_PRACTICE);
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_PRACTICE_QUESTION).
+                            addToBackStack(TAG_SUBJECT);
                     fragmentTransaction.commitAllowingStateLoss();
                 }
             };
@@ -952,8 +1115,8 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                             getFragmentManager().beginTransaction();
                     fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
                             android.R.animator.fade_out);
-                    fragmentTransaction.replace(R.id.frame, fragment, TAG_EXAM).
-                            addToBackStack(TAG_PRACTICE);
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_PRACTICE_QUESTION).
+                            addToBackStack(TAG_EXAM);
                     fragmentTransaction.commitAllowingStateLoss();
                 }
             };
@@ -1031,8 +1194,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             L.e(className, "DataBaseHelper returned null");
         }
     }
-
-
 
     /******************************* END OF PRACTICE **********************************************/
 }

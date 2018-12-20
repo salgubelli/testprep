@@ -163,7 +163,7 @@ public class QuestionPracticeFragment extends Fragment{
             @Override
             public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
                 if( keyCode == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP) {
-                    getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    getFragmentManager().popBackStack();
                     return true;
                 }
                 return false;

@@ -44,4 +44,6 @@
     <string name="sample_quote">Sample Quote</string>
     <string name="sample_author">Unknown</string>
     <string name="sample_wish">Good Morning!</string>
+
+    <string name="nothing_to_show">Nothing to show in this section yet!\n Come back later</string>
 </resources>
