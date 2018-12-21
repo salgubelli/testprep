@@ -169,7 +169,7 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
                                     dbRow.difficulty = Integer.valueOf(cell.getDisplayStringValue());
                                     break;
                                 case 13:
-                                    dbRow.userStatus = cell.getDisplayStringValue();
+                                    dbRow.userStatus = "";
                                     break;
 
                                 default:
@@ -371,7 +371,7 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
     }
 
     private String queryStringUserStatus() {
-        return "SELECT * FROM " + TABLE_QBANK + " WHERE userstatus=" + "Z";
+        return "SELECT * FROM " + TABLE_QBANK + " WHERE userstatus=" + "\"Z\"";
     }
 
     private String queryStringExams(String exam) {
