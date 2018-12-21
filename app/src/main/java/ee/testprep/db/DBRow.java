@@ -32,7 +32,12 @@ public class DBRow implements Serializable {
     public String subject;
     public Integer chapter;
     public Integer difficulty;
-    public Integer userStatus = 0;//0 not read, 1 completed, -1 to_review_later
+    /*
+        "" => user not seen
+        Z  => Incorrect answer
+        equals to KEY column => correct answer
+     */
+    public String userStatus = "";
 
     @Override
     public String toString() {

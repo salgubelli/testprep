@@ -662,9 +662,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             // If mPendingRunnable is not null, then add to the message queue
             mUIHandler.post(mPendingRunnable);
         }
-        else {
-            L.e(className, "DataBaseHelper returned null");
-        }
     }
 
     private void nextQuizQuestion() {
@@ -692,9 +689,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                 // If mPendingRunnable is not null, then add to the message queue
                 mUIHandler.post(mPendingRunnable);
             }
-        }
-        else {
-            L.e(className, "DataBaseHelper returned null");
         }
     }
 
@@ -724,11 +718,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                 mUIHandler.post(mPendingRunnable);
             }
         }
-        else {
-            L.e(className, "DataBaseHelper returned null");
-        }
     }
-    /***************************** END OF QUIZ ****************************************************/
 
     /***************************** START OF PRACTICE **********************************************/
 
@@ -759,10 +749,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             // If mPendingRunnable is not null, then add to the message queue
             MainActivity.mUIHandler.post(mPendingRunnable);
         }
-        else {
-            L.e(className, "DataBaseHelper returned null");
-        }
-
     }
 
     private void showSubjects() {
@@ -787,10 +773,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             // If mPendingRunnable is not null, then add to the message queue
             MainActivity.mUIHandler.post(mPendingRunnable);
         }
-        else {
-            L.e(className, "DataBaseHelper returned null");
-        }
-
     }
 
     private void showExams() {
@@ -815,9 +797,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             // If mPendingRunnable is not null, then add to the message queue
             MainActivity.mUIHandler.post(mPendingRunnable);
         }
-        else
-            L.e(className, "DataBaseHelper returned null");
-
     }
 
     private void showUserStatus() {
@@ -875,9 +854,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             }
 
         }
-        else {
-            L.e(className, "DataBaseHelper returned null");
-        }
     }
 
     private void showEasyQuestions() {
@@ -909,9 +885,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
             // If mPendingRunnable is not null, then add to the message queue
             MainActivity.mUIHandler.post(mPendingRunnable);
-        }
-        else {
-            L.e(className, "DataBaseHelper returned null");
         }
     }
 
@@ -945,9 +918,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             // If mPendingRunnable is not null, then add to the message queue
             MainActivity.mUIHandler.post(mPendingRunnable);
         }
-        else {
-            L.e(className, "DataBaseHelper returned null");
-        }
     }
 
     private void showHardQuestions() {
@@ -979,9 +949,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
             // If mPendingRunnable is not null, then add to the message queue
             MainActivity.mUIHandler.post(mPendingRunnable);
-        }
-        else {
-            L.e(className, "DataBaseHelper returned null");
         }
     }
 
@@ -1016,9 +983,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             // If mPendingRunnable is not null, then add to the message queue
             MainActivity.mUIHandler.post(mPendingRunnable);
         }
-        else {
-            L.e(className, "DataBaseHelper returned null");
-        }
     }
 
     private void showYearXX(String year) {
@@ -1052,10 +1016,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             // If mPendingRunnable is not null, then add to the message queue
             MainActivity.mUIHandler.post(mPendingRunnable);
         }
-        else {
-            L.e(className, "DataBaseHelper returned null");
-        }
-
     }
 
     private void showSubjectXX(String subject) {
@@ -1088,10 +1048,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             // If mPendingRunnable is not null, then add to the message queue
             MainActivity.mUIHandler.post(mPendingRunnable);
         }
-        else {
-            L.e(className, "DataBaseHelper returned null");
-        }
-
     }
 
     private void showExamXX(String exam) {
@@ -1124,10 +1080,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             // If mPendingRunnable is not null, then add to the message queue
             MainActivity.mUIHandler.post(mPendingRunnable);
         }
-        else {
-            L.e(className, "DataBaseHelper returned null");
-        }
-
     }
 
     private void showUserStatusXX(String status) {
@@ -1158,10 +1110,9 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
                 // If mPendingRunnable is not null, then add to the message queue
                 mUIHandler.post(mPendingRunnable);
+            } else {
+                L.e(className, "Error retrieving next practice question");
             }
-        }
-        else {
-            L.e(className, "DataBaseHelper returned null");
         }
     }
 
@@ -1188,10 +1139,9 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
                 // If mPendingRunnable is not null, then add to the message queue
                 mUIHandler.post(mPendingRunnable);
+            } else {
+                L.e(className, "Error retrieving previous practice question");
             }
-        }
-        else {
-            L.e(className, "DataBaseHelper returned null");
         }
     }
 
