@@ -38,6 +38,8 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
     private Workbook workbook;
     private Context mContext;
 
+    private static DataBaseHelper dbHelperInstance = null;
+
     public static final String CREATE_TABLE_MAIN = "CREATE TABLE "
             + TABLE_QBANK + "(" +
             BaseColumns._ID + " INTEGER PRIMARY KEY, "
@@ -58,9 +60,16 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
 
     private static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + TABLE_QBANK;
 
-    public DataBaseHelper(Context context) {
+    private DataBaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         mContext = context;
+    }
+
+    public static DataBaseHelper getInstance(Context context) {
+        if(dbHelperInstance == null){
+            dbHelperInstance = new DataBaseHelper(context);
+        }
+        return dbHelperInstance;
     }
 
     @Override

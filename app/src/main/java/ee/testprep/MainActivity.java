@@ -195,8 +195,8 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             L.v(className, "Permissions already granted");
         }
 
-        //if there is no database already created, create one from .xlsx
-        dbHelper = new DataBaseHelper(this);
+        //if there is no database already created, create one from .xlsx TODO
+        dbHelper = DataBaseHelper.getInstance(this);
     }
 
     private void hideStatusBar() {
