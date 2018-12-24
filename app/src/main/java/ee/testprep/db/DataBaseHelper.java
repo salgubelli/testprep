@@ -31,34 +31,18 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
     private static final String DATABASE_NAME = "eeTestPrep2.db";
 
     // Table Names
-    private static final String TABLE_USERDATA = "userData";
-    private static final String TABLE_QBANK = "qBank";
+    private static final String TABLE_USERDATA = "userdata";
+    private static final String TABLE_QBANK = "qbank";
+    private static final String TABLE_QUIZ = "quiz";
+    private static final String TABLE_MODELTEST = "modeltest";
 
     private static final int MAX_QUESTIONS = 500;
     private Workbook workbook;
     private Context mContext;
-
     private static DataBaseHelper dbHelperInstance = null;
-
-    public static final String CREATE_TABLE_MAIN = "CREATE TABLE "
-            + TABLE_QBANK + "(" +
-            BaseColumns._ID + " INTEGER PRIMARY KEY, "
-            + DBRow.KEY_EXAM + " TEXT, "
-            + DBRow.KEY_YEAR + " TEXT, "
-            //+ DBRow.KEY_QNO + " INTEGER, "
-            + DBRow.KEY_QUESTION + " TEXT, "
-            + DBRow.KEY_OPTA + " TEXT, "
-            + DBRow.KEY_OPTB + " TEXT, "
-            + DBRow.KEY_OPTC + " TEXT, "
-            + DBRow.KEY_OPTD + " TEXT, "
-            + DBRow.KEY_ANSWER + " TEXT, "
-            + DBRow.KEY_IPC + " TEXT, "
-            + DBRow.KEY_SUBJECT + " TEXT, "
-            + DBRow.KEY_CHAPTER + " INTEGER, "
-            + DBRow.KEY_DIFFICULTY + " INTEGER, "
-            + DBRow.KEY_USER_STATUS + " TEXT)";
-
     private static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + TABLE_QBANK;
+
+    ArrayList<String> tableList = new ArrayList<>();
 
     private DataBaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -66,7 +50,7 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
     }
 
     public static DataBaseHelper getInstance(Context context) {
-        if(dbHelperInstance == null){
+        if (dbHelperInstance == null) {
             dbHelperInstance = new DataBaseHelper(context);
         }
         return dbHelperInstance;
@@ -74,9 +58,18 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        if (!isTableExists(db, TABLE_QBANK)) {
-            db.execSQL(CREATE_TABLE_MAIN);
-            convertXLStoSQL();
+        updateTableList(db, R.raw.qbank_v1);
+        updateTableList(db, R.raw.quiz_v1);
+        updateTableList(db, R.raw.modeltest_v1);
+
+        for (int i = 0; i < tableList.size(); i++) {
+            if (tableList.get(i).contains(TABLE_QBANK)) {
+                convertXLStoSQL(R.raw.qbank_v1, tableList.get(i));
+            } else if (tableList.get(i).contains(TABLE_QUIZ)) {
+                convertXLStoSQL(R.raw.quiz_v1, tableList.get(i));
+            } else if (tableList.get(i).contains(TABLE_MODELTEST)) {
+                convertXLStoSQL(R.raw.modeltest_v1, tableList.get(i));
+            }
         }
     }
 
@@ -84,11 +77,32 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // on upgrade drop older tables
         db.execSQL(SQL_DELETE_ENTRIES);
+
         // create new tables
         onCreate(db);
     }
 
-    public boolean isTableExists(SQLiteDatabase db, String tableName) {
+    private String createTable(String tableName) {
+        return "CREATE TABLE "
+                + tableName + "(" +
+                BaseColumns._ID + " INTEGER PRIMARY KEY, "
+                + DBRow.KEY_EXAM + " TEXT, "
+                + DBRow.KEY_YEAR + " TEXT, "
+                //+ DBRow.KEY_QNO + " INTEGER, "
+                + DBRow.KEY_QUESTION + " TEXT, "
+                + DBRow.KEY_OPTA + " TEXT, "
+                + DBRow.KEY_OPTB + " TEXT, "
+                + DBRow.KEY_OPTC + " TEXT, "
+                + DBRow.KEY_OPTD + " TEXT, "
+                + DBRow.KEY_ANSWER + " TEXT, "
+                + DBRow.KEY_IPC + " TEXT, "
+                + DBRow.KEY_SUBJECT + " TEXT, "
+                + DBRow.KEY_CHAPTER + " INTEGER, "
+                + DBRow.KEY_DIFFICULTY + " INTEGER, "
+                + DBRow.KEY_USER_STATUS + " TEXT)";
+    }
+
+    private boolean isTableExists(SQLiteDatabase db, String tableName) {
 
         Cursor cursor = db.rawQuery(
                 "select DISTINCT tbl_name from sqlite_master where tbl_name = '" + tableName + "'",
@@ -103,7 +117,29 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
         return false;
     }
 
-    public void convertXLStoSQL() {
+    private void updateTableList(SQLiteDatabase db, final int resourceId) {
+
+        try {
+            InputStream fstream = mContext.getResources().openRawResource(resourceId);
+            LoadOptions loadOptions = new LoadOptions(FileFormatType.XLSX);
+            workbook = new Workbook(fstream, loadOptions);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (workbook != null) {
+            int worksheetCount = workbook.getWorksheets().getCount();
+
+            for (int i = 0; i < worksheetCount; i++) {
+                Worksheet worksheet = workbook.getWorksheets().get(i);
+                String sheetName = worksheet.getName();
+                tableList.add(sheetName);//sheetName is the table name
+                db.execSQL(createTable(sheetName));
+            }
+        }
+    }
+
+    private void convertXLStoSQL(final int resourceId, final String tableName) {
 
         Thread mThread = new Thread() {
 
@@ -111,21 +147,17 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
             public void run() {
 
                 try {
-                    InputStream fstream = mContext.getResources().openRawResource(R.raw.qbank_v1);
+                    InputStream fstream = mContext.getResources().openRawResource(resourceId);
                     LoadOptions loadOptions = new LoadOptions(FileFormatType.XLSX);
-                    //loadOptions.setPassword("penke999");
                     workbook = new Workbook(fstream, loadOptions);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
                 if (workbook != null) {
-                    Worksheet worksheet = workbook.getWorksheets().get(0);
-
+                    Worksheet worksheet = workbook.getWorksheets().get(tableName);
                     Iterator<Row> rowIterator = worksheet.getCells().getRows().iterator();
                     rowIterator.hasNext();//skip header TODO
-
-                    L.d(className, "rows: " + worksheet.getCells().getRows().getCount());
 
                     while (rowIterator.hasNext()) {
                         int colIndex = 0;
@@ -143,10 +175,10 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
                                 case 1:
                                     dbRow.year = cell.getDisplayStringValue();
                                     break;
-                                /*case 2:
-                                    dbRow.qNo = cell.getIntValue()+1;
-                                    L.d(getLocalClassName(), dbRow.qNo+"");
-                                    break;*/
+                            /*case 2:
+                                dbRow.qNo = cell.getIntValue()+1;
+                                L.d(getLocalClassName(), dbRow.qNo+"");
+                                break;*/
                                 case 3:
                                     dbRow.question = cell.getDisplayStringValue();
                                     break;
@@ -184,11 +216,10 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
                                 default:
                                     break;
                             }
-
                             colIndex++;
                         }
 
-                        insertRow(dbRow);
+                        insertRow(tableName, dbRow);
                     }
                 }
             }
@@ -204,7 +235,7 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
         return count;
     }
 
-    private long insertRow(DBRow row) {
+    private void insertRow(String tableName, DBRow row) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -224,12 +255,12 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
         values.put(DBRow.KEY_USER_STATUS, row.userStatus);
 
         // insert row
-        return db.insert(TABLE_QBANK, null, values);
+        db.insert(tableName, null, values);
     }
 
     public ArrayList<String> queryYear() {
         ArrayList<String> yearList = new ArrayList<>();
-        String query = queryAllYears();
+        String query = queryStringAllYears();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(query, null);
 
@@ -248,7 +279,7 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
 
     public ArrayList<String> querySubject() {
         ArrayList<String> subList = new ArrayList<>();
-        String query = queryAllSubjects();
+        String query = queryStringAllSubjects();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(query, null);
 
@@ -267,7 +298,7 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
 
     public ArrayList<String> queryExam() {
         ArrayList<String> examList = new ArrayList<>();
-        String query = queryAllExams();
+        String query = queryStringAllExams();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(query, null);
 
@@ -371,6 +402,10 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
         return questions;
     }
 
+    private String queryStringAllTables() {
+        return "SELECT name FROM sqlite_master WHERE type=" + "\"table\"";
+    }
+
     private String queryStringRandom(long numQ) {
         return "SELECT DISTINCT * FROM " + TABLE_QBANK + " ORDER BY RANDOM() LIMIT " + numQ;
     }
@@ -395,15 +430,15 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
         return "SELECT * FROM " + TABLE_QBANK + " WHERE year=\"" + year + "\"";
     }
 
-    private String queryAllSubjects() {
+    private String queryStringAllSubjects() {
         return "SELECT DISTINCT subject FROM " + TABLE_QBANK;
     }
 
-    private String queryAllExams() {
+    private String queryStringAllExams() {
         return "SELECT DISTINCT examName FROM " + TABLE_QBANK;
     }
 
-    private String queryAllYears() {
+    private String queryStringAllYears() {
         return "SELECT DISTINCT year FROM " + TABLE_QBANK;
     }
 

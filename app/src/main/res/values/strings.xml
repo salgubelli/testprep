@@ -46,4 +46,6 @@
     <string name="sample_wish">Good Morning!</string>
 
     <string name="nothing_to_show">Nothing to show in this section yet!\n Come back later</string>
+
+    <string name="quick_quiz">Take a Quiz</string>
 </resources>
