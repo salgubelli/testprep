@@ -39,7 +39,7 @@ import ee.testprep.fragment.ModelTestFragment;
 import ee.testprep.fragment.OnFragmentInteractionListener;
 import ee.testprep.fragment.QuestionPracticeFragment;
 import ee.testprep.fragment.QuizFragment;
-import ee.testprep.fragment.QuestionFragment;
+import ee.testprep.fragment.QuestionQuizFragment;
 import ee.testprep.fragment.RateUsFragment;
 import ee.testprep.fragment.SettingsFragment;
 import ee.testprep.fragment.StatsFragment;
@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     private ArrayList<DBRow> practiceQuestions;
     private PracticeMetrics practice;
 
-    private QuestionFragment questionFragment;
+    private QuestionQuizFragment questionQuizFragment;
     private QuestionPracticeFragment questionPracticeFragment;
 
     @Override
@@ -629,8 +629,8 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     }
 
     private void sendDataToFragment(int time) {
-        if(questionFragment != null){
-            (questionFragment).uiRefresh(time, quiz.getProgress());
+        if(questionQuizFragment != null){
+            (questionQuizFragment).uiRefresh(time, quiz.getProgress());
         }
     }
 
@@ -642,13 +642,13 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             quiz = new QuizMetrics(quizList, quizList.size() * TIME_INSEC_PER_QUESTION);
             quiz.startQuiz();
             uiRefresh();
-            questionFragment = QuestionFragment.newInstance(quiz.getNextQuestion(), quizList.size());
+            questionQuizFragment = QuestionQuizFragment.newInstance(quiz.getNextQuestion(), quizList.size());
 
             Runnable mPendingRunnable = new Runnable() {
                 @Override
                 public void run() {
                     // update the main content by replacing fragments
-                    Fragment fragment = questionFragment;
+                    Fragment fragment = questionQuizFragment;
                     FragmentTransaction fragmentTransaction =
                             getFragmentManager().beginTransaction();
                     fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
@@ -669,13 +669,13 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         if(dbHelper != null) {
             DBRow question = quiz.getNextQuestion();
             if(question != null) {
-                questionFragment = QuestionFragment.newInstance(question, quizList.size());
+                questionQuizFragment = QuestionQuizFragment.newInstance(question, quizList.size());
 
                 Runnable mPendingRunnable = new Runnable() {
                     @Override
                     public void run() {
                         // update the main content by replacing fragments
-                        Fragment fragment = questionFragment;
+                        Fragment fragment = questionQuizFragment;
                         FragmentTransaction fragmentTransaction =
                                 getFragmentManager().beginTransaction();
                         fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
@@ -698,12 +698,12 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             //questionFragment = QuestionFragment.newInstance((quizList.get(--questionIndex)));
             DBRow question = quiz.getPrevQuestion();
             if(question != null) {
-                questionFragment = QuestionFragment.newInstance(question, quizList.size());
+                questionQuizFragment = QuestionQuizFragment.newInstance(question, quizList.size());
                 Runnable mPendingRunnable = new Runnable() {
                     @Override
                     public void run() {
                         // update the main content by replacing fragments
-                        Fragment fragment = questionFragment;
+                        Fragment fragment = questionQuizFragment;
                         FragmentTransaction fragmentTransaction =
                                 getFragmentManager().beginTransaction();
                         fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
