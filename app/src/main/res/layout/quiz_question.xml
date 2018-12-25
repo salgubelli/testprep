@@ -13,12 +13,12 @@
 
         <ProgressBar
             android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleHorizontal"
+            style="@style/CustomProgressBar"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/padding_5sp"
             android:indeterminate="false"
-            android:minHeight="20dp"
+            android:minHeight="5dp"
             android:minWidth="200dp" />
 
     </RelativeLayout>
@@ -51,9 +51,11 @@
             android:layout_toEndOf="@id/seconds"
             android:background="@drawable/rectangle"
             android:ellipsize="marquee"
+            android:text="99:99:99"
             android:textSize="@dimen/medium_font"
             android:fontFamily="sans-serif-light"
             android:layout_centerInParent="true"
+            android:gravity="center"
             android:textStyle="bold" />
 
     </RelativeLayout>
@@ -99,6 +101,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@id/next_prev_buttons"
         android:background="@drawable/rectangle"
+        android:layout_marginTop="@dimen/padding_5sp"
         android:padding="@dimen/padding_8sp">
 
         <RelativeLayout
