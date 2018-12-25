@@ -34,7 +34,7 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
     private static final String TABLE_USERDATA = "userdata";
     private static final String TABLE_QBANK = "qbank";
     private static final String TABLE_QUIZ = "quiz";
-    private static final String TABLE_MODELTEST = "modeltest";
+    private static final String TABLE_MODELTEST = "nav_modeltest";
 
     private static final int MAX_QUESTIONS = 500;
     private Workbook workbook;

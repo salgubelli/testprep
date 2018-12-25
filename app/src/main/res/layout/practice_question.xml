@@ -3,13 +3,14 @@
     android:id="@+id/bg_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorWhite"
     android:padding="8dp">
 
     <RelativeLayout
         android:id="@+id/question_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/rectangle"
+        android:background="@drawable/rectangle_blue"
         android:layout_above="@id/radioGroup1"
         android:padding="@dimen/padding_5sp"
         android:layout_alignParentTop="true">
@@ -27,16 +28,17 @@
                 android:fontFamily="sans-serif-light"
                 android:gravity="start"
                 android:text="@string/question_header"
-                android:textColor="#000000"
+                android:textColor="@color/colorGreen"
                 android:textSize="@dimen/big_font"
                 android:textStyle="bold" />
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/fav"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:contentDescription="@string/question_image"
+                android:background="@color/colorWhite"
                 android:src="@android:drawable/btn_star_big_off"
                 android:visibility="visible" />
 
@@ -45,7 +47,8 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/q_header">
+            android:layout_below="@id/q_header"
+            android:padding="@dimen/padding_5sp">
 
             <TextView
                 android:id="@+id/question"
@@ -81,7 +84,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/next_prev_buttons"
-        android:background="@drawable/rectangle"
+        android:background="@drawable/rectangle_blue"
         android:layout_marginTop="@dimen/padding_5sp"
         android:padding="8dp">
 
@@ -231,7 +234,7 @@
             android:id="@+id/previousButton"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:background="@drawable/rectangle"
+            android:background="@drawable/rectangle_blue"
             android:text="@string/previous"
             android:textColor="#46cf47"
             android:textSize="@dimen/medium_font" />
@@ -240,7 +243,7 @@
             android:id="@+id/nextButton"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:background="@drawable/rectangle"
+            android:background="@drawable/rectangle_blue"
             android:text="@string/next"
             android:layout_alignParentEnd="true"
             android:textColor="#46cf47"

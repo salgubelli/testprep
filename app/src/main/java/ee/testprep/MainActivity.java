@@ -62,15 +62,15 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     private Toolbar toolbar;
 
     // tags used to attach the fragments
-    public static final String TAG_HOME = "home";
-    public static final String TAG_PRACTICE = "practice";
+    public static final String TAG_HOME = "nav_home";
+    public static final String TAG_PRACTICE = "nav_practice";
     public static final String TAG_QUIZ = "quiz";
     public static final String TAG_MODELTEST = "model_test";
-    public static final String TAG_STATS = "stats";
-    public static final String TAG_SETTINGS = "settings";
-    public static final String TAG_FEEDBACK = "feedback";
-    public static final String TAG_RATEUS = "rateus";
-    public static final String TAG_DONATE = "donate";
+    public static final String TAG_STATS = "nav_stats";
+    public static final String TAG_SETTINGS = "nav_settings";
+    public static final String TAG_FEEDBACK = "nav_feedback";
+    public static final String TAG_RATEUS = "nav_rateus";
+    public static final String TAG_DONATE = "nav_donate";
 
     public static final String TAG_YEAR = "year";
     public static final String TAG_SUBJECT = "subject";
@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     // toolbar titles respected to selected nav menu item
     private String[] activityTitles;
 
-    // flag to load home fragment when user presses back key
+    // flag to load nav_home fragment when user presses back key
     private boolean loadHomeOnBackPress = true;
     public static Handler mUIHandler;
 
@@ -154,6 +154,10 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        View rootView = findViewById(android.R.id.content);
+        rootView.setBackgroundResource(R.drawable.cover);
+
         //this.setTheme(android.R.style.ThemeOverlay_Material_Dark);
         setContentView(R.layout.activity_main);
         mContext = getApplicationContext();
@@ -441,11 +445,11 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             return;
         }
 
-        // This code loads home fragment when back key is pressed
-        // when user is in other fragment than home
+        // This code loads nav_home fragment when back key is pressed
+        // when user is in other fragment than nav_home
         if (loadHomeOnBackPress) {
             // checking if user is on other navigation menu
-            // rather than home
+            // rather than nav_home
             if (navItemIndex != INDEX_HOME) {
                 navItemIndex = INDEX_HOME;
                 CURRENT_TAG = TAG_HOME;
@@ -462,7 +466,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     public boolean onCreateOptionsMenu(Menu menu) {
 /*        // Inflate the menu; this adds items to the action bar if it is present.
 
-        // show menu only when home fragment is selected
+        // show menu only when nav_home fragment is selected
         if (navItemIndex == 0) {
             getMenuInflater().inflate(R.menu.main, menu);
         }
@@ -828,7 +832,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                 MainActivity.mUIHandler.post(mPendingRunnable);
 
             } else {
-                //start a practice session
+                //start a nav_practice session
                 practice = new PracticeMetrics(practiceQuestions);
 
                 //get a question fragment
@@ -862,7 +866,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             //query questions
             practiceQuestions = (ArrayList<DBRow>) dbHelper.queryQuestionsDifficulty("0 AND 3");
 
-            //start a practice session
+            //start a nav_practice session
             practice = new PracticeMetrics(practiceQuestions);
 
             //get a question fragment
@@ -894,7 +898,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             //query questions
             practiceQuestions = (ArrayList<DBRow>) dbHelper.queryQuestionsDifficulty("4 AND 6");
 
-            //start a practice session
+            //start a nav_practice session
             practice = new PracticeMetrics(practiceQuestions);
 
             //get a question fragment
@@ -926,7 +930,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             //query questions
             practiceQuestions = (ArrayList<DBRow>) dbHelper.queryQuestionsDifficulty("7 AND 9");
 
-            //start a practice session
+            //start a nav_practice session
             practice = new PracticeMetrics(practiceQuestions);
 
             //get a question fragment
@@ -959,7 +963,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             //query questions
             practiceQuestions = (ArrayList<DBRow>) dbHelper.queryQuestionsRandom();
 
-            //start a practice session
+            //start a nav_practice session
             practice = new PracticeMetrics(practiceQuestions);
 
             //get a question fragment
@@ -992,7 +996,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             //query questions
             practiceQuestions = (ArrayList<DBRow>) dbHelper.queryYearExt(year);
 
-            //start a practice session
+            //start a nav_practice session
             practice = new PracticeMetrics(practiceQuestions);
 
             //get a question fragment
@@ -1024,7 +1028,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             //query questions
             practiceQuestions = (ArrayList<DBRow>) dbHelper.querySubjectExt(subject);
 
-            //start a practice session
+            //start a nav_practice session
             practice = new PracticeMetrics(practiceQuestions);
 
             //get a question fragment
@@ -1056,7 +1060,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             //query questions
             practiceQuestions = (ArrayList<DBRow>) dbHelper.queryExamExt(exam);
 
-            //start a practice session
+            //start a nav_practice session
             practice = new PracticeMetrics(practiceQuestions);
 
             //get a question fragment
@@ -1111,7 +1115,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                 // If mPendingRunnable is not null, then add to the message queue
                 mUIHandler.post(mPendingRunnable);
             } else {
-                L.e(className, "Error retrieving next practice question");
+                L.e(className, "Error retrieving next nav_practice question");
             }
         }
     }
@@ -1140,7 +1144,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                 // If mPendingRunnable is not null, then add to the message queue
                 mUIHandler.post(mPendingRunnable);
             } else {
-                L.e(className, "Error retrieving previous practice question");
+                L.e(className, "Error retrieving previous nav_practice question");
             }
         }
     }
