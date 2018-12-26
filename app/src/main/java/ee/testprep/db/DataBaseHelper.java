@@ -209,7 +209,7 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
                                     dbRow.difficulty = Integer.valueOf(cell.getDisplayStringValue());
                                     break;
                                 case 13:
-                                    dbRow.userStatus = "";
+                                    dbRow.userstatus = "";
                                     break;
 
                                 default:
@@ -251,7 +251,7 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
         values.put(DBRow.KEY_SUBJECT, row.subject);
         values.put(DBRow.KEY_CHAPTER, row.chapter);
         values.put(DBRow.KEY_DIFFICULTY, row.difficulty);
-        values.put(DBRow.KEY_USER_STATUS, row.userStatus);
+        values.put(DBRow.KEY_USER_STATUS, row.userstatus);
 
         // insert row
         db.insert(tableName, null, values);
@@ -417,6 +417,10 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
         return "SELECT * FROM " + TABLE_QBANK + " WHERE userstatus=" + "\"Z\"";
     }
 
+    private String queryStringUserStatus(int qNo) {
+        return "SELECT * FROM " + TABLE_QBANK + " WHERE userstatus=" + "\"Z\"" + " and qno=" + qNo;
+    }
+
     private String queryStringExams(String exam) {
         return "SELECT * FROM " + TABLE_QBANK + " WHERE examName=\"" + exam + "\"";
     }
@@ -433,12 +437,26 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
         return "SELECT DISTINCT subject FROM " + TABLE_QBANK;
     }
 
-    public void setUserStatus(int qNo){
+    public void setUserStatus(int qNo, boolean status) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put("userStatus", "Z");
+        if (status) {
+            values.put("userstatus", "Z");
+        } else {
+            values.put("userstatus", "");
+        }
         db.update(TABLE_QBANK, values, "qno=" + qNo, null);
         db.close();
+    }
+
+    public String getUserStatus(int qNo) {
+        String selectQuery = queryStringUserStatus(qNo);
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+        String ret = c.getString(c.getColumnIndex("userstatus"));
+        c.close();
+        db.close();
+        return ret == null ? "" : ret;
     }
 
     private String queryStringAllExams() {
@@ -504,7 +522,7 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
         row.subject = c.getString(c.getColumnIndex(DBRow.KEY_SUBJECT));
         row.chapter = c.getInt(c.getColumnIndex(DBRow.KEY_CHAPTER));
         row.difficulty = c.getInt(c.getColumnIndex(DBRow.KEY_DIFFICULTY));
-        row.userStatus = c.getString(c.getColumnIndex(DBRow.KEY_USER_STATUS));
+        row.userstatus = c.getString(c.getColumnIndex(DBRow.KEY_USER_STATUS));
 
         return row;
     }

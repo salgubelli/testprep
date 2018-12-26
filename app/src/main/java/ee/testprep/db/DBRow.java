@@ -37,10 +37,10 @@ public class DBRow implements Serializable {
         Z  => Incorrect answer
         equals to KEY column => correct answer
      */
-    public String userStatus = "";
+    public String userstatus = "";
 
     @Override
     public String toString() {
-        return exam + " " +  year + " " + ipc + " " + subject + " " + userStatus;
+        return exam + " " +  year + " " + ipc + " " + subject + " " + userstatus;
     }
 }

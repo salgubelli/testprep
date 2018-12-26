@@ -31,6 +31,7 @@ public class QuestionPracticeFragment extends Fragment {
     private RadioButton radioButtons[] = new RadioButton[4];
     private String recordedAnswer;
     private ImageView iv_fav;
+    private DataBaseHelper dbHelper;
 
     public QuestionPracticeFragment() {
     }
@@ -61,6 +62,8 @@ public class QuestionPracticeFragment extends Fragment {
         tvQuestion.append(mQuestion.question.trim());
         tvQuestion.setMovementMethod(new ScrollingMovementMethod());
 
+        dbHelper = DataBaseHelper.getInstance(getActivity());
+
         iv_fav = view.findViewById(R.id.fav);
         iv_fav.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,11 +72,16 @@ public class QuestionPracticeFragment extends Fragment {
 
                 //if activate - update user-status
                 if (iv_fav.isActivated()) {
-                    DataBaseHelper dbHelper = DataBaseHelper.getInstance(getActivity());
-                    dbHelper.setUserStatus(mQuestion.qNo);
+                    dbHelper.setUserStatus(mQuestion.qNo, true);
+                } else {
+                    dbHelper.setUserStatus(mQuestion.qNo, false);
                 }
             }
         });
+
+        if(mQuestion.userstatus.equals("Z")) {
+            iv_fav.setActivated(true);
+        }
 
         final RadioButton tvOptA = view.findViewById(R.id.rb_optA);
         tvOptA.setText(mQuestion.optionA.trim());
