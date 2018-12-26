@@ -401,6 +401,23 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
         return questions;
     }
 
+    public List<DBRow> queryAllQuestions() {//TODO: length of list
+
+        List<DBRow> questions = new ArrayList<>();
+        String selectQuery = queryStringAllQuestions();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // loop through all rows and add to the list
+        if (c != null && c.moveToFirst()) {
+            do {
+                questions.add(setRow(c));
+            } while (c.moveToNext());
+        }
+
+        return questions;
+    }
+
     private String queryStringAllTables() {
         return "SELECT name FROM sqlite_master WHERE type=" + "\"table\"";
     }
@@ -435,6 +452,10 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
 
     private String queryStringAllSubjects() {
         return "SELECT DISTINCT subject FROM " + TABLE_QBANK;
+    }
+
+    private String queryStringAllQuestions() {
+        return "SELECT * FROM " + TABLE_QBANK;
     }
 
     public void setUserStatus(int qNo, boolean status) {

@@ -81,10 +81,10 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     public static final String TAG_RANDOM = "random";
     public static final String TAG_NOTHING_TO_SHOW = "nothing";
     public static final String TAG_USERSTATUS = "userstatus";
+    public static final String TAG_ALL = "all";
     public static final String TAG_YEAR_XX = "yearxx";
     public static final String TAG_SUBJECT_XX = "subjectxx";
     public static final String TAG_EXAM_XX = "examxx";
-
 
     public static final String TAG_QUIZ_QUESTION = "quizQ";
     public static final String TAG_PRACTICE_QUESTION = "quizP";
@@ -98,7 +98,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     private static final int INDEX_FEEDBACK = 6;
     private static final int INDEX_RATEUS = 7;
     private static final int INDEX_DONATE = 8;
-
 
     public static int navItemIndex = INDEX_HOME;
     public static String CURRENT_TAG = TAG_HOME;
@@ -119,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     public static final int STATUS_PRACTICE_USERSTATUS = 2009;
     public static final int STATUS_PRACTICE_NEXT = 2010;
     public static final int STATUS_PRACTICE_PREVIOUS = 2011;
+    public static final int STATUS_PRACTICE_ALL = 2012;
 
     public static final int STATUS_PRACTICE_YEAR_XX = 3002;
     public static final int STATUS_PRACTICE_SUBJECT_XX = 3003;
@@ -583,6 +583,9 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             case STATUS_PRACTICE_USERSTATUS:
                 showUserStatus();
                 break;
+            case STATUS_PRACTICE_ALL:
+                showAllQuestions();
+                break;
             case STATUS_PRACTICE_NEXT:
                 nextPracticeQuestion();
                 break;
@@ -608,9 +611,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                 break;
             case STATUS_PRACTICE_EXAM_XX:
                 showExamXX(filter);
-                break;
-            case STATUS_PRACTICE_USERSTATUS_XX:
-                showUserStatusXX(filter);
                 break;
             default:
                 break;
@@ -865,7 +865,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                             getFragmentManager().beginTransaction();
                     fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
                             android.R.animator.fade_out);
-                    fragmentTransaction.replace(R.id.frame, fragment, TAG_RANDOM).
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_EASY).
                             addToBackStack(TAG_PRACTICE);
                     fragmentTransaction.commitAllowingStateLoss();
                 }
@@ -901,7 +901,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                             getFragmentManager().beginTransaction();
                     fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
                             android.R.animator.fade_out);
-                    fragmentTransaction.replace(R.id.frame, fragment, TAG_RANDOM).
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_MEDIUM).
                             addToBackStack(TAG_PRACTICE);
                     fragmentTransaction.commitAllowingStateLoss();
                 }
@@ -936,7 +936,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                             getFragmentManager().beginTransaction();
                     fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
                             android.R.animator.fade_out);
-                    fragmentTransaction.replace(R.id.frame, fragment, TAG_RANDOM).
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_HARD).
                             addToBackStack(TAG_PRACTICE);
                     fragmentTransaction.commitAllowingStateLoss();
                 }
@@ -982,6 +982,41 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         }
     }
 
+    private void showAllQuestions() {
+
+        if (dbHelper != null) {
+            //query questions
+            practiceQuestions = (ArrayList<DBRow>) dbHelper.queryAllQuestions();
+
+            if (practiceQuestions.size() > 0) {
+                //start a nav_practice session
+                practice = new PracticeMetrics(practiceQuestions);
+                //get a question fragment
+                questionPracticeFragment = QuestionPracticeFragment.newInstance(practiceQuestions.get(0));
+            } else {
+                questionPracticeFragment = new NothingToShowFragment();
+            }
+
+            Runnable mPendingRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    // update the main content by replacing fragments
+                    Fragment fragment = questionPracticeFragment;
+                    FragmentTransaction fragmentTransaction =
+                            getFragmentManager().beginTransaction();
+                    fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
+                            android.R.animator.fade_out);
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_ALL).
+                            addToBackStack(TAG_PRACTICE);
+                    fragmentTransaction.commitAllowingStateLoss();
+                }
+            };
+
+            // If mPendingRunnable is not null, then add to the message queue
+            MainActivity.mUIHandler.post(mPendingRunnable);
+        }
+    }
+
     private void showYearXX(String year) {
 
         if (dbHelper != null) {
@@ -1007,7 +1042,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                             getFragmentManager().beginTransaction();
                     fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
                             android.R.animator.fade_out);
-                    fragmentTransaction.replace(R.id.frame, fragment, TAG_PRACTICE_QUESTION).
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_YEAR_XX).
                             addToBackStack(TAG_YEAR);
                     fragmentTransaction.commitAllowingStateLoss();
                 }
@@ -1043,7 +1078,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                             getFragmentManager().beginTransaction();
                     fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
                             android.R.animator.fade_out);
-                    fragmentTransaction.replace(R.id.frame, fragment, TAG_PRACTICE_QUESTION).
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_SUBJECT_XX).
                             addToBackStack(TAG_SUBJECT);
                     fragmentTransaction.commitAllowingStateLoss();
                 }
@@ -1079,7 +1114,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                             getFragmentManager().beginTransaction();
                     fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
                             android.R.animator.fade_out);
-                    fragmentTransaction.replace(R.id.frame, fragment, TAG_PRACTICE_QUESTION).
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_EXAM_XX).
                             addToBackStack(TAG_EXAM);
                     fragmentTransaction.commitAllowingStateLoss();
                 }
@@ -1088,10 +1123,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             // If mPendingRunnable is not null, then add to the message queue
             MainActivity.mUIHandler.post(mPendingRunnable);
         }
-    }
-
-    private void showUserStatusXX(String status) {
-
     }
 
     private void nextPracticeQuestion() {
