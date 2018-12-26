@@ -32,14 +32,14 @@
                 android:textSize="@dimen/big_font"
                 android:textStyle="bold" />
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/fav"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:contentDescription="@string/question_image"
                 android:background="@color/colorWhite"
-                android:src="@android:drawable/btn_star_big_off"
+                android:src="@drawable/ic_toggle"
                 android:visibility="visible" />
 
         </RelativeLayout>

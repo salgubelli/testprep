@@ -88,7 +88,7 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
                 BaseColumns._ID + " INTEGER PRIMARY KEY, "
                 + DBRow.KEY_EXAM + " TEXT, "
                 + DBRow.KEY_YEAR + " TEXT, "
-                //+ DBRow.KEY_QNO + " INTEGER, "
+                + DBRow.KEY_QNO + " INTEGER, "
                 + DBRow.KEY_QUESTION + " TEXT, "
                 + DBRow.KEY_OPTA + " TEXT, "
                 + DBRow.KEY_OPTB + " TEXT, "
@@ -175,10 +175,9 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
                                 case 1:
                                     dbRow.year = cell.getDisplayStringValue();
                                     break;
-                            /*case 2:
-                                dbRow.qNo = cell.getIntValue()+1;
-                                L.d(getLocalClassName(), dbRow.qNo+"");
-                                break;*/
+                                case 2:
+                                    dbRow.qNo = Integer.valueOf(cell.getDisplayStringValue());
+                                    break;
                                 case 3:
                                     dbRow.question = cell.getDisplayStringValue();
                                     break;
@@ -241,7 +240,7 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
         ContentValues values = new ContentValues();
         values.put(DBRow.KEY_EXAM, row.exam);
         values.put(DBRow.KEY_YEAR, row.year);
-        //values.put(DBRow.KEY_QNO, row.qNo);
+        values.put(DBRow.KEY_QNO, row.qNo);
         values.put(DBRow.KEY_QUESTION, row.question);
         values.put(DBRow.KEY_OPTA, row.optionA);
         values.put(DBRow.KEY_OPTB, row.optionB);
@@ -434,6 +433,14 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
         return "SELECT DISTINCT subject FROM " + TABLE_QBANK;
     }
 
+    public void setUserStatus(int qNo){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("userStatus", "Z");
+        db.update(TABLE_QBANK, values, "qno=" + qNo, null);
+        db.close();
+    }
+
     private String queryStringAllExams() {
         return "SELECT DISTINCT examName FROM " + TABLE_QBANK;
     }
@@ -486,7 +493,7 @@ public class DataBaseHelper extends SQLiteOpenHelper implements Serializable {
         DBRow row = new DBRow();
         row.exam = c.getString(c.getColumnIndex(DBRow.KEY_EXAM));
         row.year = c.getString(c.getColumnIndex(DBRow.KEY_YEAR));
-        //row.qNo = c.getInt(c.getColumnIndex(DBRow.KEY_QNO));
+        row.qNo = c.getInt(c.getColumnIndex(DBRow.KEY_QNO));
         row.question = c.getString(c.getColumnIndex(DBRow.KEY_QUESTION));
         row.optionA = c.getString(c.getColumnIndex(DBRow.KEY_OPTA));
         row.optionB = c.getString(c.getColumnIndex(DBRow.KEY_OPTB));
