@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     android:layout_gravity="center_vertical"
     android:gravity="center"
-    android:background="@drawable/cover"
     android:orientation="vertical">
 
     <Button
@@ -15,25 +14,5 @@
         android:background="@drawable/rectangle_blue"
         android:layout_marginEnd="2dp"
         android:text="Start Quiz"/>
-
-    <TextView
-        android:id="@+id/btn_quiz_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:padding="16dp"
-        android:maxLines="3"
-        android:textAlignment="center"
-        android:text="Take a quick, random and time-based test. Go to preferences for more settings." />
-
-    <TextView
-        android:id="@+id/btn_quiz_info2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:maxLines="1"
-        android:textAlignment="center"
-        android:text="Good Luck!" />
-
 
 </LinearLayout>
