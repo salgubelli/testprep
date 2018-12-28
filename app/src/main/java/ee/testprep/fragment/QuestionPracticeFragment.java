@@ -10,15 +10,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import ee.testprep.L;
 import ee.testprep.db.DBRow;
 import ee.testprep.MainActivity;
 import ee.testprep.R;
+import ee.testprep.db.DataBaseHelper;
 import ee.testprep.util.SimpleVibaration;
 
-public class QuestionPracticeFragment extends Fragment{
+public class QuestionPracticeFragment extends Fragment {
 
     private static String TAG = QuestionPracticeFragment.class.getSimpleName();
     private static final String ARG_PARAM1 = "param1";
@@ -26,6 +30,8 @@ public class QuestionPracticeFragment extends Fragment{
     private OnFragmentInteractionListener mListener;
     private RadioButton radioButtons[] = new RadioButton[4];
     private String recordedAnswer;
+    private ImageView iv_fav;
+    private DataBaseHelper dbHelper;
 
     public QuestionPracticeFragment() {
     }
@@ -56,6 +62,27 @@ public class QuestionPracticeFragment extends Fragment{
         tvQuestion.append(mQuestion.question.trim());
         tvQuestion.setMovementMethod(new ScrollingMovementMethod());
 
+        dbHelper = DataBaseHelper.getInstance(getActivity());
+
+        iv_fav = view.findViewById(R.id.fav);
+        iv_fav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                iv_fav.setActivated(!iv_fav.isActivated());
+
+                //if activate - update user-status
+                if (iv_fav.isActivated()) {
+                    dbHelper.setUserStatus(mQuestion.qNo, true);
+                } else {
+                    dbHelper.setUserStatus(mQuestion.qNo, false);
+                }
+            }
+        });
+
+        if(mQuestion.userstatus.equals("Z")) {
+            iv_fav.setActivated(true);
+        }
+
         final RadioButton tvOptA = view.findViewById(R.id.rb_optA);
         tvOptA.setText(mQuestion.optionA.trim());
         radioButtons[0] = tvOptA;
@@ -63,7 +90,7 @@ public class QuestionPracticeFragment extends Fragment{
         tvOptA.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mQuestion.answer.toLowerCase().equals("a")) {
+                if (mQuestion.answer.toLowerCase().equals("a")) {
                     tvOptA.setBackground(getResources().getDrawable(R.drawable.rectangle_green));
                 } else {
                     tvOptA.setBackground(getResources().getDrawable(R.drawable.rectangle_red));
@@ -84,7 +111,7 @@ public class QuestionPracticeFragment extends Fragment{
         tvOptB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mQuestion.answer.toLowerCase().equals("b")) {
+                if (mQuestion.answer.toLowerCase().equals("b")) {
                     tvOptB.setBackground(getResources().getDrawable(R.drawable.rectangle_green));
                 } else {
                     tvOptB.setBackground(getResources().getDrawable(R.drawable.rectangle_red));
@@ -105,7 +132,7 @@ public class QuestionPracticeFragment extends Fragment{
         tvOptC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mQuestion.answer.toLowerCase().equals("c")) {
+                if (mQuestion.answer.toLowerCase().equals("c")) {
                     tvOptC.setBackground(getResources().getDrawable(R.drawable.rectangle_green));
                 } else {
                     tvOptC.setBackground(getResources().getDrawable(R.drawable.rectangle_red));
@@ -126,7 +153,7 @@ public class QuestionPracticeFragment extends Fragment{
         tvOptD.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mQuestion.answer.toLowerCase().equals("d")) {
+                if (mQuestion.answer.toLowerCase().equals("d")) {
                     tvOptD.setBackground(getResources().getDrawable(R.drawable.rectangle_green));
                 } else {
                     tvOptD.setBackground(getResources().getDrawable(R.drawable.rectangle_red));
@@ -162,7 +189,7 @@ public class QuestionPracticeFragment extends Fragment{
         view.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
-                if( keyCode == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP) {
+                if (keyCode == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP) {
                     getFragmentManager().popBackStack();
                     return true;
                 }
@@ -192,11 +219,11 @@ public class QuestionPracticeFragment extends Fragment{
     }
 
     private int getIndexMap(String option) {
-        if(option.equals("a")) {
+        if (option.equals("a")) {
             return 0;
-        } else if(option.equals("b")) {
+        } else if (option.equals("b")) {
             return 1;
-        } else if(option.equals("c")) {
+        } else if (option.equals("c")) {
             return 2;
         } else {
             return 3;

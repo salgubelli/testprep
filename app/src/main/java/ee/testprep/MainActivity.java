@@ -39,7 +39,7 @@ import ee.testprep.fragment.ModelTestFragment;
 import ee.testprep.fragment.OnFragmentInteractionListener;
 import ee.testprep.fragment.QuestionPracticeFragment;
 import ee.testprep.fragment.QuizFragment;
-import ee.testprep.fragment.QuestionFragment;
+import ee.testprep.fragment.QuestionQuizFragment;
 import ee.testprep.fragment.RateUsFragment;
 import ee.testprep.fragment.SettingsFragment;
 import ee.testprep.fragment.StatsFragment;
@@ -62,15 +62,15 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     private Toolbar toolbar;
 
     // tags used to attach the fragments
-    public static final String TAG_HOME = "home";
-    public static final String TAG_PRACTICE = "practice";
+    public static final String TAG_HOME = "nav_home";
+    public static final String TAG_PRACTICE = "nav_practice";
     public static final String TAG_QUIZ = "quiz";
     public static final String TAG_MODELTEST = "model_test";
-    public static final String TAG_STATS = "stats";
-    public static final String TAG_SETTINGS = "settings";
-    public static final String TAG_FEEDBACK = "feedback";
-    public static final String TAG_RATEUS = "rateus";
-    public static final String TAG_DONATE = "donate";
+    public static final String TAG_STATS = "nav_stats";
+    public static final String TAG_SETTINGS = "nav_settings";
+    public static final String TAG_FEEDBACK = "nav_feedback";
+    public static final String TAG_RATEUS = "nav_rateus";
+    public static final String TAG_DONATE = "nav_donate";
 
     public static final String TAG_YEAR = "year";
     public static final String TAG_SUBJECT = "subject";
@@ -81,10 +81,10 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     public static final String TAG_RANDOM = "random";
     public static final String TAG_NOTHING_TO_SHOW = "nothing";
     public static final String TAG_USERSTATUS = "userstatus";
+    public static final String TAG_ALL = "all";
     public static final String TAG_YEAR_XX = "yearxx";
     public static final String TAG_SUBJECT_XX = "subjectxx";
     public static final String TAG_EXAM_XX = "examxx";
-
 
     public static final String TAG_QUIZ_QUESTION = "quizQ";
     public static final String TAG_PRACTICE_QUESTION = "quizP";
@@ -98,7 +98,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     private static final int INDEX_FEEDBACK = 6;
     private static final int INDEX_RATEUS = 7;
     private static final int INDEX_DONATE = 8;
-
 
     public static int navItemIndex = INDEX_HOME;
     public static String CURRENT_TAG = TAG_HOME;
@@ -119,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     public static final int STATUS_PRACTICE_USERSTATUS = 2009;
     public static final int STATUS_PRACTICE_NEXT = 2010;
     public static final int STATUS_PRACTICE_PREVIOUS = 2011;
+    public static final int STATUS_PRACTICE_ALL = 2012;
 
     public static final int STATUS_PRACTICE_YEAR_XX = 3002;
     public static final int STATUS_PRACTICE_SUBJECT_XX = 3003;
@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     // toolbar titles respected to selected nav menu item
     private String[] activityTitles;
 
-    // flag to load home fragment when user presses back key
+    // flag to load nav_home fragment when user presses back key
     private boolean loadHomeOnBackPress = true;
     public static Handler mUIHandler;
 
@@ -148,12 +148,16 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     private ArrayList<DBRow> practiceQuestions;
     private PracticeMetrics practice;
 
-    private QuestionFragment questionFragment;
-    private QuestionPracticeFragment questionPracticeFragment;
+    private QuestionQuizFragment questionQuizFragment;
+    private Fragment questionPracticeFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        View rootView = findViewById(android.R.id.content);
+        rootView.setBackgroundResource(R.drawable.cover);
+
         //this.setTheme(android.R.style.ThemeOverlay_Material_Dark);
         setContentView(R.layout.activity_main);
         mContext = getApplicationContext();
@@ -189,14 +193,14 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
         //set permissions if not already set
         //TODO check multiple permissions and less than 23 API
-        if(!checkPermission()) {
+        if (!checkPermission()) {
             requestPermission();
         } else {
             L.v(className, "Permissions already granted");
         }
 
-        //if there is no database already created, create one from .xlsx
-        dbHelper = new DataBaseHelper(this);
+        //if there is no database already created, create one from .xlsx TODO
+        dbHelper = DataBaseHelper.getInstance(this);
     }
 
     private void hideStatusBar() {
@@ -441,11 +445,11 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             return;
         }
 
-        // This code loads home fragment when back key is pressed
-        // when user is in other fragment than home
+        // This code loads nav_home fragment when back key is pressed
+        // when user is in other fragment than nav_home
         if (loadHomeOnBackPress) {
             // checking if user is on other navigation menu
-            // rather than home
+            // rather than nav_home
             if (navItemIndex != INDEX_HOME) {
                 navItemIndex = INDEX_HOME;
                 CURRENT_TAG = TAG_HOME;
@@ -462,7 +466,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     public boolean onCreateOptionsMenu(Menu menu) {
 /*        // Inflate the menu; this adds items to the action bar if it is present.
 
-        // show menu only when home fragment is selected
+        // show menu only when nav_home fragment is selected
         if (navItemIndex == 0) {
             getMenuInflater().inflate(R.menu.main, menu);
         }
@@ -579,6 +583,9 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             case STATUS_PRACTICE_USERSTATUS:
                 showUserStatus();
                 break;
+            case STATUS_PRACTICE_ALL:
+                showAllQuestions();
+                break;
             case STATUS_PRACTICE_NEXT:
                 nextPracticeQuestion();
                 break;
@@ -605,9 +612,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             case STATUS_PRACTICE_EXAM_XX:
                 showExamXX(filter);
                 break;
-            case STATUS_PRACTICE_USERSTATUS_XX:
-                showUserStatusXX(filter);
-                break;
             default:
                 break;
         }
@@ -617,11 +621,11 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     /***************************** START OF QUIZ **************************************************/
 
     private void uiRefresh() {
-        Timer timer=new Timer();
+        Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                if(quiz != null) {
+                if (quiz != null) {
                     sendDataToFragment(quiz.getRemainingTimeInSec());
                 }
             }
@@ -629,26 +633,26 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     }
 
     private void sendDataToFragment(int time) {
-        if(questionFragment != null){
-            (questionFragment).uiRefresh(time, quiz.getProgress());
+        if (questionQuizFragment != null) {
+            (questionQuizFragment).uiRefresh(time, quiz.getProgress());
         }
     }
 
     private void startQuiz() {
 
-        if(dbHelper != null) {
-            quizList = (ArrayList<DBRow>)dbHelper.queryQuestionsQuiz();
+        if (dbHelper != null) {
+            quizList = (ArrayList<DBRow>) dbHelper.queryQuestionsQuiz();
 
             quiz = new QuizMetrics(quizList, quizList.size() * TIME_INSEC_PER_QUESTION);
             quiz.startQuiz();
             uiRefresh();
-            questionFragment = QuestionFragment.newInstance(quiz.getNextQuestion(), quizList.size());
+            questionQuizFragment = QuestionQuizFragment.newInstance(quiz.getNextQuestion(), quizList.size());
 
             Runnable mPendingRunnable = new Runnable() {
                 @Override
                 public void run() {
                     // update the main content by replacing fragments
-                    Fragment fragment = questionFragment;
+                    Fragment fragment = questionQuizFragment;
                     FragmentTransaction fragmentTransaction =
                             getFragmentManager().beginTransaction();
                     fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
@@ -662,23 +666,20 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             // If mPendingRunnable is not null, then add to the message queue
             mUIHandler.post(mPendingRunnable);
         }
-        else {
-            L.e(className, "DataBaseHelper returned null");
-        }
     }
 
     private void nextQuizQuestion() {
 
-        if(dbHelper != null) {
+        if (dbHelper != null) {
             DBRow question = quiz.getNextQuestion();
-            if(question != null) {
-                questionFragment = QuestionFragment.newInstance(question, quizList.size());
+            if (question != null) {
+                questionQuizFragment = QuestionQuizFragment.newInstance(question, quizList.size());
 
                 Runnable mPendingRunnable = new Runnable() {
                     @Override
                     public void run() {
                         // update the main content by replacing fragments
-                        Fragment fragment = questionFragment;
+                        Fragment fragment = questionQuizFragment;
                         FragmentTransaction fragmentTransaction =
                                 getFragmentManager().beginTransaction();
                         fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
@@ -692,24 +693,21 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                 // If mPendingRunnable is not null, then add to the message queue
                 mUIHandler.post(mPendingRunnable);
             }
-        }
-        else {
-            L.e(className, "DataBaseHelper returned null");
         }
     }
 
     private void prevQuizQuestion() {
 
-        if(dbHelper != null) {
+        if (dbHelper != null) {
             //questionFragment = QuestionFragment.newInstance((quizList.get(--questionIndex)));
             DBRow question = quiz.getPrevQuestion();
-            if(question != null) {
-                questionFragment = QuestionFragment.newInstance(question, quizList.size());
+            if (question != null) {
+                questionQuizFragment = QuestionQuizFragment.newInstance(question, quizList.size());
                 Runnable mPendingRunnable = new Runnable() {
                     @Override
                     public void run() {
                         // update the main content by replacing fragments
-                        Fragment fragment = questionFragment;
+                        Fragment fragment = questionQuizFragment;
                         FragmentTransaction fragmentTransaction =
                                 getFragmentManager().beginTransaction();
                         fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
@@ -724,11 +722,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                 mUIHandler.post(mPendingRunnable);
             }
         }
-        else {
-            L.e(className, "DataBaseHelper returned null");
-        }
     }
-    /***************************** END OF QUIZ ****************************************************/
 
     /***************************** START OF PRACTICE **********************************************/
 
@@ -737,7 +731,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     }
 
     private void showYears() {
-        if(dbHelper != null) {
+        if (dbHelper != null) {
             ArrayList<String> years = dbHelper.queryYear();
             yearFragment = YearFragment.newInstance(years);
 
@@ -759,14 +753,10 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             // If mPendingRunnable is not null, then add to the message queue
             MainActivity.mUIHandler.post(mPendingRunnable);
         }
-        else {
-            L.e(className, "DataBaseHelper returned null");
-        }
-
     }
 
     private void showSubjects() {
-        if(dbHelper != null) {
+        if (dbHelper != null) {
             ArrayList<String> subjects = dbHelper.querySubject();
             subjectFragment = SubjectFragment.newInstance(subjects);
 
@@ -779,7 +769,8 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                             getFragmentManager().beginTransaction();
                     fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
                             android.R.animator.fade_out);
-                    fragmentTransaction.replace(R.id.frame, fragment, TAG_SUBJECT).addToBackStack(TAG_PRACTICE);;
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_SUBJECT).addToBackStack(TAG_PRACTICE);
+                    ;
                     fragmentTransaction.commitAllowingStateLoss();
                 }
             };
@@ -787,14 +778,10 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             // If mPendingRunnable is not null, then add to the message queue
             MainActivity.mUIHandler.post(mPendingRunnable);
         }
-        else {
-            L.e(className, "DataBaseHelper returned null");
-        }
-
     }
 
     private void showExams() {
-        if(dbHelper != null) {
+        if (dbHelper != null) {
             ArrayList<String> exams = dbHelper.queryExam();
             examFragment = ExamFragment.newInstance(exams);
 
@@ -815,82 +802,59 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             // If mPendingRunnable is not null, then add to the message queue
             MainActivity.mUIHandler.post(mPendingRunnable);
         }
-        else
-            L.e(className, "DataBaseHelper returned null");
-
     }
 
     private void showUserStatus() {
 
-        if(dbHelper != null) {
+        if (dbHelper != null) {
             //query questions
             practiceQuestions = (ArrayList<DBRow>) dbHelper.queryQuestionsUserStatus();
 
-            if(practiceQuestions.isEmpty()) {
+            if (practiceQuestions.isEmpty()) {
                 //no questions in this category, show empty fragment
-                final Fragment nothingToShowFragment = NothingToShowFragment.newInstance();
-
-                Runnable mPendingRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        // update the main content by replacing fragments
-                        Fragment fragment = nothingToShowFragment;
-                        FragmentTransaction fragmentTransaction =
-                                getFragmentManager().beginTransaction();
-                        fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
-                                android.R.animator.fade_out);
-                        fragmentTransaction.replace(R.id.frame, fragment, TAG_NOTHING_TO_SHOW).
-                                addToBackStack(TAG_PRACTICE);
-                        fragmentTransaction.commitAllowingStateLoss();
-                    }
-                };
-
-                // If mPendingRunnable is not null, then add to the message queue
-                MainActivity.mUIHandler.post(mPendingRunnable);
-
+                questionPracticeFragment = NothingToShowFragment.newInstance();
             } else {
-                //start a practice session
+                //start a nav_practice session
                 practice = new PracticeMetrics(practiceQuestions);
-
                 //get a question fragment
                 questionPracticeFragment = QuestionPracticeFragment.newInstance(practiceQuestions.get(0));
-
-                Runnable mPendingRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        // update the main content by replacing fragments
-                        Fragment fragment = questionPracticeFragment;
-                        FragmentTransaction fragmentTransaction =
-                                getFragmentManager().beginTransaction();
-                        fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
-                                android.R.animator.fade_out);
-                        fragmentTransaction.replace(R.id.frame, fragment, TAG_RANDOM).
-                                addToBackStack(TAG_PRACTICE);
-                        fragmentTransaction.commitAllowingStateLoss();
-                    }
-                };
-
-                // If mPendingRunnable is not null, then add to the message queue
-                MainActivity.mUIHandler.post(mPendingRunnable);
             }
 
-        }
-        else {
-            L.e(className, "DataBaseHelper returned null");
+            Runnable mPendingRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    // update the main content by replacing fragments
+                    Fragment fragment = questionPracticeFragment;
+                    FragmentTransaction fragmentTransaction =
+                            getFragmentManager().beginTransaction();
+                    fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
+                            android.R.animator.fade_out);
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_NOTHING_TO_SHOW).
+                            addToBackStack(TAG_PRACTICE);
+                    fragmentTransaction.commitAllowingStateLoss();
+                }
+            };
+
+            // If mPendingRunnable is not null, then add to the message queue
+            MainActivity.mUIHandler.post(mPendingRunnable);
         }
     }
 
     private void showEasyQuestions() {
 
-        if(dbHelper != null) {
+        if (dbHelper != null) {
             //query questions
             practiceQuestions = (ArrayList<DBRow>) dbHelper.queryQuestionsDifficulty("0 AND 3");
 
-            //start a practice session
-            practice = new PracticeMetrics(practiceQuestions);
+            if(practiceQuestions.size() > 0) {
+                //start a nav_practice session
+                practice = new PracticeMetrics(practiceQuestions);
 
-            //get a question fragment
-            questionPracticeFragment = QuestionPracticeFragment.newInstance(practiceQuestions.get(0));
+                //get a question fragment
+                questionPracticeFragment = QuestionPracticeFragment.newInstance(practiceQuestions.get(0));
+            } else {
+                questionPracticeFragment = new NothingToShowFragment();
+            }
 
             Runnable mPendingRunnable = new Runnable() {
                 @Override
@@ -901,7 +865,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                             getFragmentManager().beginTransaction();
                     fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
                             android.R.animator.fade_out);
-                    fragmentTransaction.replace(R.id.frame, fragment, TAG_RANDOM).
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_EASY).
                             addToBackStack(TAG_PRACTICE);
                     fragmentTransaction.commitAllowingStateLoss();
                 }
@@ -909,23 +873,24 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
             // If mPendingRunnable is not null, then add to the message queue
             MainActivity.mUIHandler.post(mPendingRunnable);
-        }
-        else {
-            L.e(className, "DataBaseHelper returned null");
         }
     }
 
     private void showMediumQuestions() {
 
-        if(dbHelper != null) {
+        if (dbHelper != null) {
             //query questions
             practiceQuestions = (ArrayList<DBRow>) dbHelper.queryQuestionsDifficulty("4 AND 6");
 
-            //start a practice session
-            practice = new PracticeMetrics(practiceQuestions);
+            if(practiceQuestions.size() > 0) {
+                //start a nav_practice session
+                practice = new PracticeMetrics(practiceQuestions);
 
-            //get a question fragment
-            questionPracticeFragment = QuestionPracticeFragment.newInstance(practiceQuestions.get(0));
+                //get a question fragment
+                questionPracticeFragment = QuestionPracticeFragment.newInstance(practiceQuestions.get(0));
+            } else {
+                questionPracticeFragment = new NothingToShowFragment();
+            }
 
             Runnable mPendingRunnable = new Runnable() {
                 @Override
@@ -936,7 +901,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                             getFragmentManager().beginTransaction();
                     fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
                             android.R.animator.fade_out);
-                    fragmentTransaction.replace(R.id.frame, fragment, TAG_RANDOM).
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_MEDIUM).
                             addToBackStack(TAG_PRACTICE);
                     fragmentTransaction.commitAllowingStateLoss();
                 }
@@ -944,23 +909,23 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
             // If mPendingRunnable is not null, then add to the message queue
             MainActivity.mUIHandler.post(mPendingRunnable);
-        }
-        else {
-            L.e(className, "DataBaseHelper returned null");
         }
     }
 
     private void showHardQuestions() {
 
-        if(dbHelper != null) {
+        if (dbHelper != null) {
             //query questions
             practiceQuestions = (ArrayList<DBRow>) dbHelper.queryQuestionsDifficulty("7 AND 9");
 
-            //start a practice session
-            practice = new PracticeMetrics(practiceQuestions);
-
-            //get a question fragment
-            questionPracticeFragment = QuestionPracticeFragment.newInstance(practiceQuestions.get(0));
+            if (practiceQuestions.size() > 0) {
+                //start a nav_practice session
+                practice = new PracticeMetrics(practiceQuestions);
+                //get a question fragment
+                questionPracticeFragment = QuestionPracticeFragment.newInstance(practiceQuestions.get(0));
+            } else {
+                questionPracticeFragment = new NothingToShowFragment();
+            }
 
             Runnable mPendingRunnable = new Runnable() {
                 @Override
@@ -971,7 +936,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                             getFragmentManager().beginTransaction();
                     fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
                             android.R.animator.fade_out);
-                    fragmentTransaction.replace(R.id.frame, fragment, TAG_RANDOM).
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_HARD).
                             addToBackStack(TAG_PRACTICE);
                     fragmentTransaction.commitAllowingStateLoss();
                 }
@@ -979,24 +944,23 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
             // If mPendingRunnable is not null, then add to the message queue
             MainActivity.mUIHandler.post(mPendingRunnable);
-        }
-        else {
-            L.e(className, "DataBaseHelper returned null");
         }
     }
 
     private void showRandomQuestions() {
 
-        if(dbHelper != null) {
-
+        if (dbHelper != null) {
             //query questions
             practiceQuestions = (ArrayList<DBRow>) dbHelper.queryQuestionsRandom();
 
-            //start a practice session
-            practice = new PracticeMetrics(practiceQuestions);
-
-            //get a question fragment
-            questionPracticeFragment = QuestionPracticeFragment.newInstance(practiceQuestions.get(0));
+            if (practiceQuestions.size() > 0) {
+                //start a nav_practice session
+                practice = new PracticeMetrics(practiceQuestions);
+                //get a question fragment
+                questionPracticeFragment = QuestionPracticeFragment.newInstance(practiceQuestions.get(0));
+            } else {
+                questionPracticeFragment = new NothingToShowFragment();
+            }
 
             Runnable mPendingRunnable = new Runnable() {
                 @Override
@@ -1016,23 +980,22 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             // If mPendingRunnable is not null, then add to the message queue
             MainActivity.mUIHandler.post(mPendingRunnable);
         }
-        else {
-            L.e(className, "DataBaseHelper returned null");
-        }
     }
 
-    private void showYearXX(String year) {
+    private void showAllQuestions() {
 
-        if(dbHelper != null) {
-
+        if (dbHelper != null) {
             //query questions
-            practiceQuestions = (ArrayList<DBRow>) dbHelper.queryYearExt(year);
+            practiceQuestions = (ArrayList<DBRow>) dbHelper.queryAllQuestions();
 
-            //start a practice session
-            practice = new PracticeMetrics(practiceQuestions);
-
-            //get a question fragment
-            questionPracticeFragment = QuestionPracticeFragment.newInstance(practiceQuestions.get(0));
+            if (practiceQuestions.size() > 0) {
+                //start a nav_practice session
+                practice = new PracticeMetrics(practiceQuestions);
+                //get a question fragment
+                questionPracticeFragment = QuestionPracticeFragment.newInstance(practiceQuestions.get(0));
+            } else {
+                questionPracticeFragment = new NothingToShowFragment();
+            }
 
             Runnable mPendingRunnable = new Runnable() {
                 @Override
@@ -1043,7 +1006,43 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                             getFragmentManager().beginTransaction();
                     fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
                             android.R.animator.fade_out);
-                    fragmentTransaction.replace(R.id.frame, fragment, TAG_PRACTICE_QUESTION).
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_ALL).
+                            addToBackStack(TAG_PRACTICE);
+                    fragmentTransaction.commitAllowingStateLoss();
+                }
+            };
+
+            // If mPendingRunnable is not null, then add to the message queue
+            MainActivity.mUIHandler.post(mPendingRunnable);
+        }
+    }
+
+    private void showYearXX(String year) {
+
+        if (dbHelper != null) {
+            //query questions
+            practiceQuestions = (ArrayList<DBRow>) dbHelper.queryYearExt(year);
+
+            if(practiceQuestions.size() > 0) {
+                //start a nav_practice session
+                practice = new PracticeMetrics(practiceQuestions);
+
+                //get a question fragment
+                questionPracticeFragment = QuestionPracticeFragment.newInstance(practiceQuestions.get(0));
+            } else {
+                questionPracticeFragment = new NothingToShowFragment();
+            }
+
+            Runnable mPendingRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    // update the main content by replacing fragments
+                    Fragment fragment = questionPracticeFragment;
+                    FragmentTransaction fragmentTransaction =
+                            getFragmentManager().beginTransaction();
+                    fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
+                            android.R.animator.fade_out);
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_YEAR_XX).
                             addToBackStack(TAG_YEAR);
                     fragmentTransaction.commitAllowingStateLoss();
                 }
@@ -1052,23 +1051,23 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             // If mPendingRunnable is not null, then add to the message queue
             MainActivity.mUIHandler.post(mPendingRunnable);
         }
-        else {
-            L.e(className, "DataBaseHelper returned null");
-        }
-
     }
 
     private void showSubjectXX(String subject) {
 
-        if(dbHelper != null) {
+        if (dbHelper != null) {
             //query questions
             practiceQuestions = (ArrayList<DBRow>) dbHelper.querySubjectExt(subject);
 
-            //start a practice session
-            practice = new PracticeMetrics(practiceQuestions);
+            if(practiceQuestions.size() > 0) {
+                //start a nav_practice session
+                practice = new PracticeMetrics(practiceQuestions);
 
-            //get a question fragment
-            questionPracticeFragment = QuestionPracticeFragment.newInstance(practiceQuestions.get(0));
+                //get a question fragment
+                questionPracticeFragment = QuestionPracticeFragment.newInstance(practiceQuestions.get(0));
+            } else {
+                questionPracticeFragment = new NothingToShowFragment();
+            }
 
             Runnable mPendingRunnable = new Runnable() {
                 @Override
@@ -1079,7 +1078,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                             getFragmentManager().beginTransaction();
                     fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
                             android.R.animator.fade_out);
-                    fragmentTransaction.replace(R.id.frame, fragment, TAG_PRACTICE_QUESTION).
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_SUBJECT_XX).
                             addToBackStack(TAG_SUBJECT);
                     fragmentTransaction.commitAllowingStateLoss();
                 }
@@ -1088,23 +1087,23 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             // If mPendingRunnable is not null, then add to the message queue
             MainActivity.mUIHandler.post(mPendingRunnable);
         }
-        else {
-            L.e(className, "DataBaseHelper returned null");
-        }
-
     }
 
     private void showExamXX(String exam) {
 
-        if(dbHelper != null) {
+        if (dbHelper != null) {
             //query questions
             practiceQuestions = (ArrayList<DBRow>) dbHelper.queryExamExt(exam);
 
-            //start a practice session
-            practice = new PracticeMetrics(practiceQuestions);
+            if(practiceQuestions.size() > 0) {
+                //start a nav_practice session
+                practice = new PracticeMetrics(practiceQuestions);
 
-            //get a question fragment
-            questionPracticeFragment = QuestionPracticeFragment.newInstance(practiceQuestions.get(0));
+                //get a question fragment
+                questionPracticeFragment = QuestionPracticeFragment.newInstance(practiceQuestions.get(0));
+            } else {
+                questionPracticeFragment = new NothingToShowFragment();
+            }
 
             Runnable mPendingRunnable = new Runnable() {
                 @Override
@@ -1115,7 +1114,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                             getFragmentManager().beginTransaction();
                     fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
                             android.R.animator.fade_out);
-                    fragmentTransaction.replace(R.id.frame, fragment, TAG_PRACTICE_QUESTION).
+                    fragmentTransaction.replace(R.id.frame, fragment, TAG_EXAM_XX).
                             addToBackStack(TAG_EXAM);
                     fragmentTransaction.commitAllowingStateLoss();
                 }
@@ -1124,21 +1123,13 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             // If mPendingRunnable is not null, then add to the message queue
             MainActivity.mUIHandler.post(mPendingRunnable);
         }
-        else {
-            L.e(className, "DataBaseHelper returned null");
-        }
-
-    }
-
-    private void showUserStatusXX(String status) {
-
     }
 
     private void nextPracticeQuestion() {
 
-        if(dbHelper != null) {
+        if (dbHelper != null) {
             DBRow question = practice.getNextQuestion();
-            if(question != null) {
+            if (question != null) {
                 questionPracticeFragment = QuestionPracticeFragment.newInstance(question);
 
                 Runnable mPendingRunnable = new Runnable() {
@@ -1158,19 +1149,19 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
                 // If mPendingRunnable is not null, then add to the message queue
                 mUIHandler.post(mPendingRunnable);
+            } else {
+                L.e(className, "No more questions available");
             }
-        }
-        else {
-            L.e(className, "DataBaseHelper returned null");
         }
     }
 
     private void prevPracticeQuestion() {
 
-        if(dbHelper != null) {
+        if (dbHelper != null) {
             DBRow question = practice.getPrevQuestion();
-            if(question != null) {
+            if (question != null) {
                 questionPracticeFragment = QuestionPracticeFragment.newInstance(question);
+
                 Runnable mPendingRunnable = new Runnable() {
                     @Override
                     public void run() {
@@ -1188,10 +1179,9 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
                 // If mPendingRunnable is not null, then add to the message queue
                 mUIHandler.post(mPendingRunnable);
+            } else {
+                L.e(className, "No previous questions available");
             }
-        }
-        else {
-            L.e(className, "DataBaseHelper returned null");
         }
     }
 

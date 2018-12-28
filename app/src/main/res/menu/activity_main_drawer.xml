@@ -8,7 +8,7 @@
         android:checkableBehavior="single">
         <item
             android:id="@+id/nav_home"
-            android:icon="@drawable/home"
+            android:icon="@drawable/nav_home"
             android:title="Home" />
     </group>
 
@@ -18,15 +18,15 @@
 
         <item
             android:id="@+id/nav_practice"
-            android:icon="@drawable/practice"
+            android:icon="@drawable/nav_practice"
             android:title="Practice" />
         <item
             android:id="@+id/nav_quiz"
-            android:icon="@drawable/timer"
+            android:icon="@drawable/nav_timer"
             android:title="Quiz" />
         <item
             android:id="@+id/nav_modeltest"
-            android:icon="@drawable/modeltest"
+            android:icon="@drawable/nav_modeltest"
             android:title="Model Test" />
 
     </group>
@@ -38,12 +38,12 @@
 
         <item
             android:id="@+id/nav_stats"
-            android:icon="@drawable/stats2"
+            android:icon="@drawable/nav_stats2"
             android:title="Stats" />
 
         <item
             android:id="@+id/nav_settings"
-            android:icon="@drawable/settings"
+            android:icon="@drawable/nav_settings"
             android:title="Settings" />
 
     </group>
@@ -52,17 +52,17 @@
         <menu>
             <item
                 android:id="@+id/nav_feedback"
-                android:icon="@drawable/feedback"
+                android:icon="@drawable/nav_feedback"
                 android:title="Feedback" />
 
             <item
                 android:id="@+id/nav_rateus"
-                android:icon="@drawable/rateus"
+                android:icon="@drawable/nav_rateus"
                 android:title="Rate Us" />
 
             <item
                 android:id="@+id/nav_donate"
-                android:icon="@drawable/donate"
+                android:icon="@drawable/nav_donate"
                 android:title="Donate" />
 
         </menu>

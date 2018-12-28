@@ -19,9 +19,9 @@ import ee.testprep.MainActivity;
 import ee.testprep.R;
 import ee.testprep.util.SimpleVibaration;
 
-public class QuestionFragment extends Fragment{
+public class QuestionQuizFragment extends Fragment{
 
-    private static String TAG = QuestionFragment.class.getSimpleName();
+    private static String TAG = QuestionQuizFragment.class.getSimpleName();
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private DBRow mQuestion;
@@ -32,11 +32,11 @@ public class QuestionFragment extends Fragment{
     private static ProgressBar mProgressBar;
     private String recordedAnswer;
 
-    public QuestionFragment() {
+    public QuestionQuizFragment() {
     }
 
-    public static QuestionFragment newInstance(DBRow question, int numQuestions) {
-        QuestionFragment fragment = new QuestionFragment();
+    public static QuestionQuizFragment newInstance(DBRow question, int numQuestions) {
+        QuestionQuizFragment fragment = new QuestionQuizFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable(ARG_PARAM1, question);
         bundle.putSerializable(ARG_PARAM2, numQuestions);

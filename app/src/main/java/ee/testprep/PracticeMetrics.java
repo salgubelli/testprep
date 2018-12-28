@@ -13,12 +13,15 @@ public class PracticeMetrics {
     PracticeMetrics(ArrayList<DBRow> qList) {
         mPList = qList;
         mNumQuestions = qList.size();
-        mCurrIndex = -1;
+        mCurrIndex = 0;
     }
 
     public DBRow getNextQuestion() {
         DBRow q = null;
-        if(mCurrIndex < mNumQuestions - 1) {
+
+        if(mNumQuestions < 1) return q;
+
+        if(mCurrIndex < (mNumQuestions- 1)) {
             ++mCurrIndex;
             q = mPList.get(mCurrIndex);
         }

@@ -28,7 +28,8 @@ public class PracticeFragment extends Fragment {
             {"Medium", "scale 4-6"},
             {"Hard", "scale: 7-9"},
             {"Random", "random"},
-            {"Starred", "to review later"}
+            {"Starred", "to review later"},
+            {"All", "no filters"}
     };
 
     public PracticeFragment() {
@@ -87,6 +88,9 @@ public class PracticeFragment extends Fragment {
                         break;
                     case 7:
                         onButtonPressed(MainActivity.STATUS_PRACTICE_USERSTATUS);
+                        break;
+                    case 8:
+                        onButtonPressed(MainActivity.STATUS_PRACTICE_ALL);
                         break;
                 }
             }

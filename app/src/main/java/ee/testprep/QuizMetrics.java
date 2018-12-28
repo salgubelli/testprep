@@ -105,7 +105,6 @@ public class QuizMetrics {
                 //use a handler to run a toast that shows the current timestamp
                 MainActivity.mUIHandler.post(new Runnable() {
                     public void run() {
-                        L.d(TAG, "PENKE Timer task running");
                         mCurrTime = System.currentTimeMillis();
                         mRemainingTime = mEndTime - mCurrTime;
 
@@ -114,7 +113,6 @@ public class QuizMetrics {
                         } else {
                             mQStatus = QuizStatus.QSTOPPED;
                             stoptimertask();
-                            L.d(TAG, "PENKE Timer task stopped");
                         }
                     }
                 });

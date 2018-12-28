@@ -9,13 +9,17 @@
     <string name="openDrawer">open_drawer</string>
     <string name="closeDrawer">close_drawer</string>
     <string name="question_header">Question:\n\n</string>
+    <string name="practice">Practice</string>
+    <string name="quiz">Quiz</string>
+    <string name="model_tests">Model Tests</string>
+    <string name="question_header">Question:</string>
 
     <!-- Toolbar titles when navigation menu item is selected -->
     <string-array name="nav_item_activity_titles">
         <item>Home</item>
-        <item>Practice</item>
-        <item>Quiz</item>
-        <item>Model Test</item>
+        <item>@string/practice</item>
+        <item>@string/quiz</item>
+        <item>@string/model_tests</item>
         <item>Stats</item>
         <item>Settings</item>
         <item>Feedback</item>
@@ -46,4 +50,6 @@
     <string name="sample_wish">Good Morning!</string>
 
     <string name="nothing_to_show">Nothing to show in this section yet!\n Come back later</string>
+
+    <string name="quick_quiz">Take a Quiz</string>
 </resources>
